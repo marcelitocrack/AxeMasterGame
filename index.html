@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Aquí sigue el resto de tu código -->
-    
     <meta charset="UTF-8">
     <title>AXE MASTER GAME (PIXEL BETA)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -300,8 +297,7 @@
         }
         @keyframes floatUp {
             0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-40px) scale(1.2); opacity: 0; }
-        }
+            100% { transform: translateY(-40px) scale(1.2); opacity: 0; }        }
         .tree-bar-container {
             position: absolute;
             width: 80px;
@@ -862,9 +858,7 @@
     function comprarBroteMagma() { if(dinero >= 100000 && parseInt(document.getElementById('stockMagma').innerText) > 0) { dinero -= 100000; document.getElementById('bMagma').innerText = parseInt(document.getElementById('bMagma').innerText)+1; document.getElementById('stockMagma').innerText--; document.getElementById('dinero').innerText = dinero; actualizarBotones(); } }
     function comprarBroteCosmico() { if(dinero >= 250000 && parseInt(document.getElementById('stockCosmico').innerText) > 0) { dinero -= 250000; document.getElementById('bCosmico').innerText = parseInt(document.getElementById('bCosmico').innerText)+1; document.getElementById('stockCosmico').innerText--; document.getElementById('dinero').innerText = dinero; actualizarBotones(); } }
     function comprarBroteEterno() { if(dinero >= 500000 && parseInt(document.getElementById('stockEterno').innerText) > 0) { dinero -= 500000; document.getElementById('bEterno').innerText = parseInt(document.getElementById('bEterno').innerText)+1; document.getElementById('stockEterno').innerText--; document.getElementById('dinero').innerText = dinero; actualizarBotones(); } }
-    function comprarBroteVoid() { if(dinero >= 1000000 && parseInt(document.getElementById('stockVoid').innerText) > 0) { dinero -= 1000000; document.getElementById('bVoid').innerText = parseInt(document.getElementById('bVoid').innerText)+1; document.getElementById('stockVoid').innerText--; document.getElementById('dinero').innerText = dinero; actualizarBotones(); } }
-
-    function venderMadera() {
+    function comprarBroteVoid() { if(dinero >= 1000000 && parseInt(document.getElementById('stockVoid').innerText) > 0) { dinero -= 1000000; document.getElementById('bVoid').innerText = parseInt(document.getElementById('bVoid').innerText)+1; document.getElementById('stockVoid').innerText--; document.getElementById('dinero').innerText = dinero; actualizarBotones(); } }  function venderMadera() {
         let totalMadera = mNormal + mBlanca + mNevada + mPino + mEsp1 + mEsp2 + mEsp3 + mGravedad + mSombra + mArcoiris + mMagma + mCosmica + mEterno + mVoid;
         if(totalMadera === 0) return;
         
@@ -1162,8 +1156,7 @@
         document.getElementById('btnPlantarBlanco').disabled = (parseInt(document.getElementById('brotesBlancos').innerText) <= 0 || hayArbol);
         document.getElementById('btnPlantarNevado').disabled = (parseInt(document.getElementById('brotesNevados').innerText) <= 0 || hayArbol);
         document.getElementById('btnPlantarPino').disabled = (parseInt(document.getElementById('brotesPinos').innerText) <= 0 || hayArbol);
-        document.getElementById('btnPlantarEsp1').disabled = (parseInt(document.getElementById('bEsp1').innerText) <= 0 || hayArbol);
-        document.getElementById('btnPlantarEsp2').disabled = (parseInt(document.getElementById('bEsp2').innerText) <= 0 || hayArbol);
+        document.getElementById('btnPlantarEsp1').disabled = (parseInt(document.getElementById('bEsp1').innerText) <= 0 || hayArbol);        document.getElementById('btnPlantarEsp2').disabled = (parseInt(document.getElementById('bEsp2').innerText) <= 0 || hayArbol);
         document.getElementById('btnPlantarEsp3').disabled = (parseInt(document.getElementById('bEsp3').innerText) <= 0 || hayArbol);
         document.getElementById('btnPlantarGalactico').disabled = (parseInt(document.getElementById('bGalactico').innerText) <= 0 || hayArbol);
         document.getElementById('btnPlantarSombra').disabled = (parseInt(document.getElementById('bSombra').innerText) <= 0 || hayArbol);
@@ -1435,12 +1428,697 @@
         if (arbol.visible && tipoArbol === 9 && arbol.children[1]) {
             let hueArbol = (Date.now() % 3000) / 3000;
             arbol.children[1].material.color.setHSL(hueArbol, 1, 0.5);
-        }
-        
+    }        
         actualizarUIBarrasYCrecimiento();
         renderer.render(scene, camera);
     }
     animate();
+</script><!-- BOTÓN Y MENÚ DE MISIONES FLOTANTE (Sin estorbar la vista de los árboles) -->
+<div id="contenedorMisionesUI" style="position: fixed; top: 10px; left: 10px; z-index: 1000; font-family: monospace;">
+    <button onclick="toggleMenuMisiones()" style="background: #4CAF50; color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">🏆 Misiones & Prestigio</button>
+    
+    <!-- Ventana desplegable oculta al inicio para no tapar nada -->
+    <div id="modalMisiones" style="display: none; background: rgba(0,0,0,0.92); color: white; padding: 12px; border-radius: 10px; border: 2px solid #4CAF50; width: 200px; margin-top: 5px; font-size: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.7);">
+        <h3 style="margin: 0 0 5px 0; color: #4CAF50; text-align: center; font-size: 11px;">🏆 Misión Activa</h3>
+        <p id="txtMision" style="margin: 0 0 5px 0; text-align: center;">Tala 10: (0/10)</p>
+        <button onclick="reclamarMision()" id="btnMision" style="background: #4CAF50; color: white; border: none; padding: 3px; border-radius: 3px; cursor: pointer; display: none; width: 100%; font-size: 9px; margin-bottom: 5px;">¡Reclamar!</button>
+
+        <hr style="border-color: #444; margin: 6px 0;">
+
+        <h3 style="margin: 0 0 3px 0; color: #2196F3; text-align: center; font-size: 11px;">🌲 Biomas (50 🪵)</h3>
+        <button onclick="cambiarBiomaNevado()" style="background: #2196F3; color: white; border: none; padding: 4px; border-radius: 3px; cursor: pointer; width: 100%; font-size: 9px;">Bioma Nevado ❄️</button>
+
+        <hr style="border-color: #444; margin: 6px 0;">
+
+        <h3 style="margin: 0 0 3px 0; color: #FF9800; text-align: center; font-size: 11px;" id="tituloRenacimiento">⚡ Prestigio (Req: 200 🪵)</h3>
+        <button onclick="hacerRenacimiento()" style="background: #FF9800; color: white; border: none; padding: 4px; border-radius: 3px; cursor: pointer; width: 100%; font-size: 9px;">Renacer (x2) 🚀</button>
+    </div>
+</div>
+
+<script>
+    let arbolesContador = 0;
+    let metaMision = 10;
+    let misionLista = false;
+    
+    // Variables de control progresivo
+    if (typeof multiplicadorGlobal === 'undefined') var multiplicadorGlobal = 1;
+    if (typeof madera === 'undefined') var madera = 0; 
+    let costoRenacimientoActual = 200; // El costo inicial subirá con cada renacimiento
+
+    // Mostrar u ocultar el menú con un botón para limpiar la pantalla de juego
+    function toggleMenuMisiones() {
+        let modal = document.getElementById("modalMisiones");
+        modal.style.display = (modal.style.display === "none" || modal.style.display === "") ? "block" : "none";
+    }
+
+    // 1. SISTEMA DE TALA Y MISIONES
+    function registrarTala() {
+        madera += (1 * multiplicadorGlobal);
+
+        if (misionLista) return;
+        arbolesContador++;
+        let txt = document.getElementById("txtMision");
+        let btn = document.getElementById("btnMision");
+        
+        if (arbolesContador >= metaMision) {
+            txt.innerHTML = "¡Completada!";
+            btn.style.display = "block";
+        } else {
+            txt.innerHTML = `Tala ${metaMision}: (${arbolesContador}/${metaMision})`;
+        }
+    }
+
+    function reclamarMision() {
+        misionLista = true;
+        madera += (50 * multiplicadorGlobal); 
+        document.getElementById("txtMision").innerHTML = "¡Lista (+Recompensa)!";
+        document.getElementById("btnMision").style.display = "none";
+        alert("¡Recompensa reclamada con éxito!");
+    }
+
+    // 2. BIOMA NEVADO
+    function cambiarBiomaNevado() {
+        const costoBioma = 50;
+        if (typeof madera !== 'undefined' && madera >= costoBioma) {
+            madera -= costoBioma;
+            if (typeof scene !== 'undefined') {
+                scene.background = new THREE.Color(0xdbeafe); 
+                if (typeof fog !== 'undefined') scene.fog = new THREE.Fog(0xdbeafe, 10, 50);
+                scene.traverse((child) => {
+                    if (child.isMesh && child.material && child !== arbol) {
+                        child.material.color.setHex(0xffffff); 
+                    }
+                });
+            }
+            alert("¡Bienvenido al Bioma Nevado ❄️!");
+        } else {
+            alert("¡Necesitas al menos 50 🪵 para viajar!");
+        }
+    }
+
+    // 3. RENACIMIENTO PROGRESIVO (Más difícil cada vez)
+    function hacerRenacimiento() {
+        if (typeof madera !== 'undefined' && madera >= costoRenacimientoActual) {
+            if (confirm(`¿Hacer renacimiento? Perderás tu madera pero duplicarás tu poder (x2). El próximo costará más.`)) {
+                madera = 0;
+                multiplicadorGlobal *= 2;
+                arbolesContador = 0;
+                misionLista = false;
+                metaMision += 10; // Aumenta la meta de la misión también
+                
+                // ¡Aumenta la dificultad del requisito de madera para el siguiente renacimiento!
+                costoRenacimientoActual *= 3; 
+
+                document.getElementById("txtMision").innerHTML = `Tala ${metaMision}: (0/${metaMision})`;
+                document.getElementById("tituloRenacimiento.innerHTML") = `⚡ Prestigio (Req: ${costoRenacimientoActual} 🪵)`;
+                // Actualizamos el texto del botón directamente
+                document.querySelector("#modalMisiones button[onclick='hacerRenacimiento()']").innerHTML = `Renacer (Req: ${costoRenacimientoActual} 🪵) x2 🚀`;
+
+                alert("¡Renacimiento exitoso! Tu multiplicador ahora es x" + multiplicadorGlobal + ". ¡Los próximos retos serán más difíciles!");
+            }
+        } else {
+            alert(`¡Te falta madera! Requieres ${costoRenacimientoActual} 🪵 para este renacimiento.`);
+        }
+    }
 </script>
-</body>
-</html
+<!-- INTERFAZ LIMPIA: SOLO BOTÓN DE HACHA CRÍTICA CON AUDIO -->
+<div style="position: fixed; top: 5px; left: 50%; transform: translateX(-50%); z-index: 2147483647; font-family: monospace; display: flex; gap: 8px;">
+    
+    <!-- Botón Cuadrado de Hacha Crítica (Poder x2 con recarga de 15s) -->
+    <button id="btnGolpeCritico" style="background: #E91E63; color: white; border: 2px solid white; width: 38px; height: 38px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; position: relative;" title="Poder de Hacha x2">🪓</button>
+</div>
+
+<!-- Animaciones visuales pulidas -->
+<style>
+    @keyframes animacionPoderHacha {
+        0% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 2px #E91E63); }
+        30% { transform: scale(1.4) rotate(-35deg); filter: drop-shadow(0 0 20px #FFEB3B) brightness(2.2); }
+        60% { transform: scale(1.4) rotate(25deg); filter: drop-shadow(0 0 20px #FF5722) brightness(2.2); }
+        100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 2px #E91E63); }
+    }
+    .claseAnimacionHachaPoder {
+        animation: animacionPoderHacha 0.5s ease-in-out;
+    }
+    
+    @keyframes destelloPantalla {
+        0% { box-shadow: inset 0 0 0px rgba(255,235,59,0); }
+        50% { box-shadow: inset 0 0 50px rgba(255,235,59,0.7); }
+        100% { box-shadow: inset 0 0 0px rgba(255,235,59,0); }
+    }
+    .efectoDestelloVentana {
+        animation: destelloPantalla 0.5s ease-in-out;
+    }
+</script>
+<!-- INTERFAZ LIMPIA: BOTÓN DE HUEVOS Y HACHA CRÍTICA CON AUDIO -->
+<div style="position: fixed; top: 5px; left: 50%; transform: translateX(-50%); z-index: 2147483647; font-family: monospace; display: flex; gap: 8px;">
+    
+    <!-- Botón Cuadrado de Huevos (Tienda) -->
+    <div style="position: relative;">
+        <button id="btnAbrirTiendaHuevos" style="background: #9c27b0; color: white; border: 2px solid white; width: 38px; height: 38px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center;" title="Tienda de Huevos">🥚</button>
+        
+        <!-- Menú Desplegable de Huevos -->
+        <div id="modalMenuGeneral" style="display: none; position: fixed; left: 50%; transform: translateX(-50%); top: 48px; background: rgba(0,0,0,0.98); color: white; padding: 12px; border-radius: 10px; border: 2px solid #9c27b0; width: 230px; font-size: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.9); max-height: 75vh; overflow-y: auto; z-index: 2147483647;">
+            <h3 style="margin: 0 0 8px 0; color: #9c27b0; text-align: center; font-size: 11px;">🥚 Tienda de Huevos (Rarezas)</h3>
+            
+            <div style="background: rgba(121,85,72,0.4); padding: 6px; border-radius: 4px; margin-bottom: 6px; border: 1px solid #795548;">
+                <div style="font-weight: bold; color: #d7ccc8; margin-bottom: 3px;">📦 Huevo Común</div>
+                <button class="btnHuevo" data-rareza="comun" style="background: #795548; color: white; border: none; padding: 5px; border-radius: 3px; cursor: pointer; width: 100%; font-size: 9px;">Comprar (50 🪵)</button>
+            </div>
+
+            <div style="background: rgba(33,150,243,0.4); padding: 6px; border-radius: 4px; margin-bottom: 6px; border: 1px solid #2196F3;">
+                <div style="font-weight: bold; color: #bbdefb; margin-bottom: 3px;">📦 Huevo Raro</div>
+                <button class="btnHuevo" data-rareza="raro" style="background: #2196F3; color: white; border: none; padding: 5px; border-radius: 3px; cursor: pointer; width: 100%; font-size: 9px;">Comprar (150 🪵)</button>
+            </div>
+
+            <div style="background: rgba(156,39,176,0.4); padding: 6px; border-radius: 4px; margin-bottom: 6px; border: 1px solid #9c27b0;">
+                <div style="font-weight: bold; color: #e1bee7; margin-bottom: 3px;">📦 Huevo Épico</div>
+                <button class="btnHuevo" data-rareza="epico" style="background: #9c27b0; color: white; border: none; padding: 5px; border-radius: 3px; cursor: pointer; width: 100%; font-size: 9px;">Comprar (400 🪵)</button>
+            </div>
+
+            <div style="background: rgba(255,152,0,0.4); padding: 6px; border-radius: 4px; margin-bottom: 8px; border: 1px solid #FF9800;">
+                <div style="font-weight: bold; color: #ffe0b2; margin-bottom: 3px;">📦 Huevo Legendario</div>
+                <button class="btnHuevo" data-rareza="legendario" style="background: #FF9800; color: white; border: none; padding: 5px; border-radius: 3px; cursor: pointer; width: 100%; font-size: 9px;">Comprar (1000 🪵)</button>
+            </div>
+            
+            <button id="btnCerrarMenuModal" style="background: #f44336; color: white; border: none; padding: 6px; border-radius: 3px; cursor: pointer; width: 100%; font-size: 9px; margin-top: 4px; font-weight: bold;">Cerrar Menú ❌</button>
+        </div>
+    </div>
+
+    <!-- Botón Cuadrado de Hacha Crítica (Poder x2 con recarga de 15s) -->
+    <button id="btnGolpeCritico" style="background: #E91E63; color: white; border: 2px solid white; width: 38px; height: 38px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; position: relative;" title="Poder de Hacha x2">🪓</button>
+</div>
+
+<!-- Animaciones visuales pulidas -->
+<style>
+    @keyframes animacionPoderHacha {
+        0% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 2px #E91E63); }
+        30% { transform: scale(1.4) rotate(-35deg); filter: drop-shadow(0 0 20px #FFEB3B) brightness(2.2); }
+        60% { transform: scale(1.4) rotate(25deg); filter: drop-shadow(0 0 20px #FF5722) brightness(2.2); }
+        100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 2px #E91E63); }
+    }
+    .claseAnimacionHachaPoder {
+        animation: animacionPoderHacha 0.5s ease-in-out;
+    }
+    
+    @keyframes destelloPantalla {
+        0% { box-shadow: inset 0 0 0px rgba(255,235,59,0); }
+        50% { box-shadow: inset 0 0 50px rgba(255,235,59,0.7); }
+        100% { box-shadow: inset 0 0 0px rgba(255,235,59,0); }
+    }
+    .efectoDestelloVentana {
+        animation: destelloPantalla 0.5s ease-in-out;
+    }
+</style>
+
+<script>
+    let enRecargaCritico = false;
+    let audioCtx = null;
+
+    // Inicializar sistema de audio web integrado (sin archivos externos)
+    function obtenerAudioContext() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        return audioCtx;
+    }
+
+    // Efecto de sonido de corte/golpe
+    function reproducirSonidoGolpe() {
+        try {
+            let ctx = obtenerAudioContext();
+            let osc = ctx.createOscillator();
+            let gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(150, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.1);
+        } catch(e) {}
+    }
+
+    // Efecto de sonido especial para el hacha crítica
+    function reproducirSonidoPoder() {
+        try {
+            let ctx = obtenerAudioContext();
+            let osc = ctx.createOscillator();
+            let gain = ctx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(200, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.3);
+            gain.gain.setValueAtTime(0.4, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.3);
+        } catch(e) {}
+    }
+
+    // Música de fondo atmosférica relajante en bucle suave
+    function iniciarMusicaDeFondo() {
+        try {
+            let ctx = obtenerAudioContext();
+            let notas = [220, 246.94, 277.18, 329.63, 369.99]; // Acordes melódicos
+            let indice = 0;
+            setInterval(() => {
+                if(Math.random() > 0.4) {
+                    let osc = ctx.createOscillator();
+                    let gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(notas[Math.floor(Math.random() * notas.length)], ctx.currentTime);
+                    gain.gain.setValueAtTime(0.02, ctx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 2.0);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 2.0);
+                }
+            }, 3000);
+        } catch(e) {}
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        let btnAbrir = document.getElementById("btnAbrirTiendaHuevos");
+        let modalMenu = document.getElementById("modalMenuGeneral");
+        let btnCerrar = document.getElementById("btnCerrarMenuModal");
+        let btnCritico = document.getElementById("btnGolpeCritico");
+
+        // Activar música de fondo y audio al primer toque en la pantalla
+        document.body.addEventListener("pointerdown", function iniciarAudioUnico() {
+            obtenerAudioContext();
+            iniciarMusicaDeFondo();
+            document.body.removeEventListener("pointerdown", iniciarAudioUnico);
+        }, { once: true });
+
+        if (btnAbrir && modalMenu) {
+            btnAbrir.addEventListener("click", function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                reproducirSonidoGolpe();
+                modalMenu.style.display = (modalMenu.style.display === "block") ? "none" : "block";
+            });
+        }
+
+        if (btnCerrar && modalMenu) {
+            btnCerrar.addEventListener("click", function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                modalMenu.style.display = "none";
+            });
+    }        
+        actualizarUIBarrasYCrecimiento();
+        renderer.render(scene, camera);
+    }
+    animate();
+</script><!-- BOTÓN Y MENÚ DE MISIONES FLOTANTE (Sin estorbar la vista de los árboles) -->
+<div id="contenedorMisionesUI" style="position: fixed; top: 10px; left: 10px; z-index: 1000; font-family: monospace;">
+    <button onclick="toggleMenuMisiones()" style="background: #4CAF50; color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">🏆 Misiones & Prestigio</button>
+    
+    <!-- Ventana desplegable oculta al inicio para no tapar nada -->
+    <div id="modalMisiones" style="display: none; background: rgba(0,0,0,0.92); color: white; padding: 12px; border-radius: 10px; border: 2px solid #4CAF50; width: 200px; margin-top: 5px; font-size: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.7);">
+        <h3 style="margin: 0 0 5px 0; color: #4CAF50; text-align: center; font-size: 11px;">🏆 Misión Activa</h3>
+        <p id="txtMision" style="margin: 0 0 5px 0; text-align: center;">Tala 10: (0/10)</p>
+        <button onclick="reclamarMision()" id="btnMision" style="background: #4CAF50; color: white; border: none; padding: 3px; border-radius: 3px; cursor: pointer; display: none; width: 100%; font-size: 9px; margin-bottom: 5px;">¡Reclamar!</button>
+
+        <hr style="border-color: #444; margin: 6px 0;">
+
+        <h3 style="margin: 0 0 3px 0; color: #2196F3; text-align: center; font-size: 11px;">🌲 Biomas (50 🪵)</h3>
+        <button onclick="cambiarBiomaNevado()" style="background: #2196F3; color: white; border: none; padding: 4px; border-radius: 3px; cursor: pointer; width: 100%; font-size: 9px;">Bioma Nevado ❄️</button>
+
+        <hr style="border-color: #444; margin: 6px 0;">
+
+        <h3 style="margin: 0 0 3px 0; color: #FF9800; text-align: center; font-size: 11px;" id="tituloRenacimiento">⚡ Prestigio (Req: 200 🪵)</h3>
+        <button onclick="hacerRenacimiento()" style="background: #FF9800; color: white; border: none; padding: 4px; border-radius: 3px; cursor: pointer; width: 100%; font-size: 9px;">Renacer (x2) 🚀</button>
+    </div>
+</div>
+
+<script>
+    let arbolesContador = 0;
+    let metaMision = 10;
+    let misionLista = false;
+    
+    // Variables de control progresivo
+    if (typeof multiplicadorGlobal === 'undefined') var multiplicadorGlobal = 1;
+    if (typeof madera === 'undefined') var madera = 0; 
+    let costoRenacimientoActual = 200; // El costo inicial subirá con cada renacimiento
+
+    // Mostrar u ocultar el menú con un botón para limpiar la pantalla de juego
+    function toggleMenuMisiones() {
+        let modal = document.getElementById("modalMisiones");
+        modal.style.display = (modal.style.display === "none" || modal.style.display === "") ? "block" : "none";
+    }
+
+    // 1. SISTEMA DE TALA Y MISIONES
+    function registrarTala() {
+        madera += (1 * multiplicadorGlobal);
+
+        if (misionLista) return;
+        arbolesContador++;
+        let txt = document.getElementById("txtMision");
+        let btn = document.getElementById("btnMision");
+        
+        if (arbolesContador >= metaMision) {
+            txt.innerHTML = "¡Completada!";
+            btn.style.display = "block";
+        } else {
+            txt.innerHTML = `Tala ${metaMision}: (${arbolesContador}/${metaMision})`;
+        }
+    }
+
+    function reclamarMision() {
+        misionLista = true;
+        madera += (50 * multiplicadorGlobal); 
+        document.getElementById("txtMision").innerHTML = "¡Lista (+Recompensa)!";
+        document.getElementById("btnMision").style.display = "none";
+        alert("¡Recompensa reclamada con éxito!");
+    }
+
+    // 2. BIOMA NEVADO
+    function cambiarBiomaNevado() {
+        const costoBioma = 50;
+        if (typeof madera !== 'undefined' && madera >= costoBioma) {
+            madera -= costoBioma;
+            if (typeof scene !== 'undefined') {
+                scene.background = new THREE.Color(0xdbeafe); 
+                if (typeof fog !== 'undefined') scene.fog = new THREE.Fog(0xdbeafe, 10, 50);
+                scene.traverse((child) => {
+                    if (child.isMesh && child.material && child !== arbol) {
+                        child.material.color.setHex(0xffffff); 
+                    }
+                });
+            }
+            alert("¡Bienvenido al Bioma Nevado ❄️!");
+        } else {
+            alert("¡Necesitas al menos 50 🪵 para viajar!");
+        }
+    }
+
+    // 3. RENACIMIENTO PROGRESIVO (Más difícil cada vez)
+    function hacerRenacimiento() {
+        if (typeof madera !== 'undefined' && madera >= costoRenacimientoActual) {
+            if (confirm(`¿Hacer renacimiento? Perderás tu madera pero duplicarás tu poder (x2). El próximo costará más.`)) {
+                madera = 0;
+                multiplicadorGlobal *= 2;
+                arbolesContador = 0;
+                misionLista = false;
+                metaMision += 10; // Aumenta la meta de la misión también
+                
+                // ¡Aumenta la dificultad del requisito de madera para el siguiente renacimiento!
+                costoRenacimientoActual *= 3; 
+
+                document.getElementById("txtMision").innerHTML = `Tala ${metaMision}: (0/${metaMision})`;
+                document.getElementById("tituloRenacimiento.innerHTML") = `⚡ Prestigio (Req: ${costoRenacimientoActual} 🪵)`;
+                // Actualizamos el texto del botón directamente
+                document.querySelector("#modalMisiones button[onclick='hacerRenacimiento()']").innerHTML = `Renacer (Req: ${costoRenacimientoActual} 🪵) x2 🚀`;
+
+                alert("¡Renacimiento exitoso! Tu multiplicador ahora es x" + multiplicadorGlobal + ". ¡Los próximos retos serán más difíciles!");
+            }
+        } else {
+            alert(`¡Te falta madera! Requieres ${costoRenacimientoActual} 🪵 para este renacimiento.`);
+        }
+    }
+</script>
+<!-- INTERFAZ LIMPIA: SOLO BOTÓN DE HACHA CRÍTICA CON AUDIO -->
+<div style="position: fixed; top: 5px; left: 50%; transform: translateX(-50%); z-index: 2147483647; font-family: monospace; display: flex; gap: 8px;">
+    
+    <!-- Botón Cuadrado de Hacha Crítica (Poder x2 con recarga de 15s) -->
+    <button id="btnGolpeCritico" style="background: #E91E63; color: white; border: 2px solid white; width: 38px; height: 38px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; position: relative;" title="Poder de Hacha x2">🪓</button>
+</div>
+
+<!-- Animaciones visuales pulidas -->
+<style>
+    @keyframes animacionPoderHacha {
+        0% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 2px #E91E63); }
+        30% { transform: scale(1.4) rotate(-35deg); filter: drop-shadow(0 0 20px #FFEB3B) brightness(2.2); }
+        60% { transform: scale(1.4) rotate(25deg); filter: drop-shadow(0 0 20px #FF5722) brightness(2.2); }
+        100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 2px #E91E63); }
+    }
+    .claseAnimacionHachaPoder {
+        animation: animacionPoderHacha 0.5s ease-in-out;
+    }
+    
+    @keyframes destelloPantalla {
+        0% { box-shadow: inset 0 0 0px rgba(255,235,59,0); }
+        50% { box-shadow: inset 0 0 50px rgba(255,235,59,0.7); }
+        100% { box-shadow: inset 0 0 0px rgba(255,235,59,0); }
+    }
+    .efectoDestelloVentana {
+        animation: destelloPantalla 0.5s ease-in-out;
+    }
+</script>
+<!-- INTERFAZ LIMPIA: BOTÓN DE HUEVOS Y HACHA CRÍTICA CON AUDIO -->
+<div style="position: fixed; top: 5px; left: 50%; transform: translateX(-50%); z-index: 2147483647; font-family: monospace; display: flex; gap: 8px;">
+    
+    <!-- Botón Cuadrado de Huevos (Tienda) -->
+    <div style="position: relative;">
+        <button id="btnAbrirTiendaHuevos" style="background: #9c27b0; color: white; border: 2px solid white; width: 38px; height: 38px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center;" title="Tienda de Huevos">🥚</button>
+        
+        <!-- Menú Desplegable de Huevos -->
+        <div id="modalMenuGeneral" style="display: none; position: fixed; left: 50%; transform: translateX(-50%); top: 48px; background: rgba(0,0,0,0.98); color: white; padding: 12px; border-radius: 10px; border: 2px solid #9c27b0; width: 230px; font-size: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.9); max-height: 75vh; overflow-y: auto; z-index: 2147483647;">
+            <h3 style="margin: 0 0 8px 0; color: #9c27b0; text-align: center; font-size: 11px;">🥚 Tienda de Huevos (Rarezas)</h3>
+            
+            <div style="background: rgba(121,85,72,0.4); padding: 6px; border-radius: 4px; margin-bottom: 6px; border: 1px solid #795548;">
+                <div style="font-weight: bold; color: #d7ccc8; margin-bottom: 3px;">📦 Huevo Común</div>
+                <button class="btnHuevo" data-rareza="comun" style="background: #795548; color: white; border: none; padding: 5px; border-radius: 3px; cursor: pointer; width: 100%; font-size: 9px;">Comprar (50 🪵)</button>
+            </div>
+
+            <div style="background: rgba(33,150,243,0.4); padding: 6px; border-radius: 4px; margin-bottom: 6px; border: 1px solid #2196F3;">
+                <div style="font-weight: bold; color: #bbdefb; margin-bottom: 3px;">📦 Huevo Raro</div>
+                <button class="btnHuevo" data-rareza="raro" style="background: #2196F3; color: white; border: none; padding: 5px; border-radius: 3px; cursor: pointer; width: 100%; font-size: 9px;">Comprar (150 🪵)</button>
+            </div>
+
+            <div style="background: rgba(156,39,176,0.4); padding: 6px; border-radius: 4px; margin-bottom: 6px; border: 1px solid #9c27b0;">
+                <div style="font-weight: bold; color: #e1bee7; margin-bottom: 3px;">📦 Huevo Épico</div>
+                <button class="btnHuevo" data-rareza="epico" style="background: #9c27b0; color: white; border: none; padding: 5px; border-radius: 3px; cursor: pointer; width: 100%; font-size: 9px;">Comprar (400 🪵)</button>
+            </div>
+
+            <div style="background: rgba(255,152,0,0.4); padding: 6px; border-radius: 4px; margin-bottom: 8px; border: 1px solid #FF9800;">
+                <div style="font-weight: bold; color: #ffe0b2; margin-bottom: 3px;">📦 Huevo Legendario</div>
+                <button class="btnHuevo" data-rareza="legendario" style="background: #FF9800; color: white; border: none; padding: 5px; border-radius: 3px; cursor: pointer; width: 100%; font-size: 9px;">Comprar (1000 🪵)</button>
+            </div>
+            
+            <button id="btnCerrarMenuModal" style="background: #f44336; color: white; border: none; padding: 6px; border-radius: 3px; cursor: pointer; width: 100%; font-size: 9px; margin-top: 4px; font-weight: bold;">Cerrar Menú ❌</button>
+        </div>
+    </div>
+
+    <!-- Botón Cuadrado de Hacha Crítica (Poder x2 con recarga de 15s) -->
+    <button id="btnGolpeCritico" style="background: #E91E63; color: white; border: 2px solid white; width: 38px; height: 38px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; position: relative;" title="Poder de Hacha x2">🪓</button>
+</div>
+
+<!-- Animaciones visuales pulidas -->
+<style>
+    @keyframes animacionPoderHacha {
+        0% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 2px #E91E63); }
+        30% { transform: scale(1.4) rotate(-35deg); filter: drop-shadow(0 0 20px #FFEB3B) brightness(2.2); }
+        60% { transform: scale(1.4) rotate(25deg); filter: drop-shadow(0 0 20px #FF5722) brightness(2.2); }
+        100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 2px #E91E63); }
+    }
+    .claseAnimacionHachaPoder {
+        animation: animacionPoderHacha 0.5s ease-in-out;
+    }
+    
+    @keyframes destelloPantalla {
+        0% { box-shadow: inset 0 0 0px rgba(255,235,59,0); }
+        50% { box-shadow: inset 0 0 50px rgba(255,235,59,0.7); }
+        100% { box-shadow: inset 0 0 0px rgba(255,235,59,0); }
+    }
+    .efectoDestelloVentana {
+        animation: destelloPantalla 0.5s ease-in-out;
+    }
+</style>
+
+<script>
+    let enRecargaCritico = false;
+    let audioCtx = null;
+
+    // Inicializar sistema de audio web integrado (sin archivos externos)
+    function obtenerAudioContext() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        return audioCtx;
+    }
+
+    // Efecto de sonido de corte/golpe
+    function reproducirSonidoGolpe() {
+        try {
+            let ctx = obtenerAudioContext();
+            let osc = ctx.createOscillator();
+            let gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(150, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.1);
+        } catch(e) {}
+    }
+
+    // Efecto de sonido especial para el hacha crítica
+    function reproducirSonidoPoder() {
+        try {
+            let ctx = obtenerAudioContext();
+            let osc = ctx.createOscillator();
+            let gain = ctx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(200, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.3);
+            gain.gain.setValueAtTime(0.4, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.3);
+        } catch(e) {}
+    }
+
+    // Música de fondo atmosférica relajante en bucle suave
+    function iniciarMusicaDeFondo() {
+        try {
+            let ctx = obtenerAudioContext();
+            let notas = [220, 246.94, 277.18, 329.63, 369.99]; // Acordes melódicos
+            let indice = 0;
+            setInterval(() => {
+                if(Math.random() > 0.4) {
+                    let osc = ctx.createOscillator();
+                    let gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(notas[Math.floor(Math.random() * notas.length)], ctx.currentTime);
+                    gain.gain.setValueAtTime(0.02, ctx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 2.0);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 2.0);
+                }
+            }, 3000);
+        } catch(e) {}
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        let btnAbrir = document.getElementById("btnAbrirTiendaHuevos");
+        let modalMenu = document.getElementById("modalMenuGeneral");
+        let btnCerrar = document.getElementById("btnCerrarMenuModal");
+        let btnCritico = document.getElementById("btnGolpeCritico");
+
+        // Activar música de fondo y audio al primer toque en la pantalla
+        document.body.addEventListener("pointerdown", function iniciarAudioUnico() {
+            obtenerAudioContext();
+            iniciarMusicaDeFondo();
+            document.body.removeEventListener("pointerdown", iniciarAudioUnico);
+        }, { once: true });
+
+        if (btnAbrir && modalMenu) {
+            btnAbrir.addEventListener("click", function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                reproducirSonidoGolpe();
+                modalMenu.style.display = (modalMenu.style.display === "block") ? "none" : "block";
+            });
+        }
+
+        if (btnCerrar && modalMenu) {
+            btnCerrar.addEventListener("click", function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                modalMenu.style.display = "none";
+            });
+        }
+
+        if (btnCritico) {
+            btnCritico.addEventListener("click", function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                ejecutarPoderHachaEspecial(this);
+            });
+        }
+
+        let listaBotonesHuevos = document.querySelectorAll(".btnHuevo");
+        listaBotonesHuevos.forEach(function(boton) {
+            boton.addEventListener("click", function() {
+                let rarezaElegida = this.getAttribute("data-rareza");
+                abrirHuevo(rarezaElegida);
+            });
+        });
+    });
+
+    // SISTEMA DE HUEVOS
+    let mascotasInventario = [];
+    function abrirHuevo(rareza) {
+        let costo = 50;
+        let nombreHuevo = "Común";
+        if (rareza === 'raro') { costo = 150; nombreHuevo = "Raro"; }
+        else if (rareza === 'epico') { costo = 400; nombreHuevo = "Épico"; }
+        else if (rareza === 'legendario') { costo = 1000; nombreHuevo = "Legendario"; }
+
+        if (typeof madera !== 'undefined' && madera >= costo) {
+            madera -= costo;
+            reproducirSonidoPoder();
+            let mascotaObtenida = `Mascota ${nombreHuevo} 🪵`;
+            if (rareza === 'legendario') mascotaObtenida = "¡Mascota Mítica Dragón Fénix 🔥!";
+            else if (rareza === 'epico') mascotaObtenida = "¡Mascota Épica Lobo Oscuro 🐺!";
+            else if (rareza === 'raro') mascotaObtenida = "Mascota Rara Oso 🐻";
+
+            mascotasInventario.push(mascotaObtenida);
+            alert(`¡Abriste el Huevo ${nombreHuevo} y obtuviste: ${mascotaObtenida}!`);
+        } else {
+            alert(`¡No tienes suficiente madera! Requieres ${costo} 🪵 para el Huevo ${nombreHuevo}.`);
+        }
+    }
+
+    // PODER ESPECIAL DE HACHA: Duplica el daño exacto del árbol con sonido épico y 15s de recarga
+    function ejecutarPoderHachaEspecial(botonElemento) {
+        if (enRecargaCritico) return;
+
+        enRecargaCritico = true;
+        let tiempoRestante = 15;
+        
+        reproducirSonidoPoder();
+
+        // 1. Animación y destello
+        botonElemento.classList.add("claseAnimacionHachaPoder");
+        botonElemento.style.background = "#FFEB3B";
+        document.body.classList.add("efectoDestelloVentana");
+
+        // 2. SIMULAR DOBLE GOLPE FÍSICO AL ÁRBOL (Daño x2 exacto)
+        let canvasJuego = document.querySelector("canvas") || document.querySelector("#game") || document.body;
+        
+        if (canvasJuego) {
+            let eventoClick1 = new MouseEvent("click", { clientX: window.innerWidth / 2, clientY: window.innerHeight / 2, bubbles: true });
+            let eventoClick2 = new MouseEvent("click", { clientX: window.innerWidth / 2, clientY: window.innerHeight / 2, bubbles: true });
+            
+            canvasJuego.dispatchEvent(eventoClick1);
+            setTimeout(() => {
+                canvasJuego.dispatchEvent(eventoClick2);
+            }, 60);
+        }
+
+        // Respaldo de variable global de madera por si acaso
+        if (typeof madera !== 'undefined') {
+            let mult = (typeof multiplicadorGlobal !== 'undefined') ? multiplicadorGlobal : 1;
+            madera += (2 * mult);
+        }
+
+        // Quitar clases de animación
+        setTimeout(function() {
+            botonElemento.classList.remove("claseAnimacionHachaPoder");
+            document.body.classList.remove("efectoDestelloVentana");
+        }, 500);
+
+        // 3. Temporizador de recarga de 15 segundos
+        let intervaloCooldown = setInterval(function() {
+            tiempoRestante--;
+            botonElemento.inn
