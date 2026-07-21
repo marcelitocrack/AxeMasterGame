@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>AXE MASTER GAME (PIXEL BETA)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; background: #2c3e50; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; user-select: none; -webkit-user-select: none; }
+        
+        #menuPrincipal { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: linear-gradient(135deg, #12181b, #090d10); 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 100; 
+            gap: 20px;
+            border: 6px solid #4a3525;
+            box-sizing: border-box;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.9);
+        }
+        #menuPrincipal h1 { 
+            color: #f1c40f; 
+            font-size: 34px; 
+            text-shadow: 4px 4px #000, 0 0 15px rgba(241, 196, 15, 0.5); 
+            margin-bottom: 5px; 
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        #menuPrincipal .subtitulo {
+            color: #bdc3c7;
+            font-size: 11px;
+            margin-top: -15px;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px #000;
+            letter-spacing: 1px;
+        }
+        
+        .menu-btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 240px;
+        }
+
+        #menuPrincipal button { 
+            width: 100%; 
+            height: 48px; 
+            font-size: 13px; 
+            background: linear-gradient(to bottom, #f39c12, #d35400); 
+            color: white; 
+            border: 3px solid #f1c40f; 
+            border-radius: 12px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            box-shadow: 0 5px 0 #78281f, 0 8px 15px rgba(0,0,0,0.5); 
+            transition: all 0.1s ease;
+            text-shadow: 1px 1px #000;
+            letter-spacing: 1px;
+        }
+        #menuPrincipal button:hover { 
+            filter: brightness(1.15); 
+        }
+        #menuPrincipal button:active { 
+            transform: translateY(4px); 
+            box-shadow: 0 1px 0 #78281f, 0 4px 8px rgba(0,0,0,0.5); 
+        }
+
+        #menuSkins, #menuFondos { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 320px; background: #fdf6e3; padding: 20px; border: 4px solid #8b4513; border-radius: 15px; text-align: center; color: #5d4037; z-index: 110; box-shadow: 0 10px 25px rgba(0,0,0,0.7); }
+        #menuSkins h2, #menuFondos h2 { margin-top: 0; font-size: 18px; margin-bottom: 15px; }
+        .opcion-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+        .opcion-grid button { width: 100%; height: 35px; background: #e67e22; font-size: 11px; }
+
+        #ui { position: absolute; top: 10px; left: 10px; color: white; background: rgba(0,0,0,0.7); padding: 10px 14px; border-radius: 10px; z-index: 5; font-size: 10px; max-width: 520px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(5px); display: none; }
+        .botones-menu { 
+            position: absolute; 
+            bottom: 12px; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 98%; 
+            max-width: 900px;
+            text-align: center; 
+            display: none; 
+            flex-direction: column;
+            gap: 5px;
+            z-index: 10; 
+            background: rgba(0, 0, 0, 0.6);
+            padding: 8px;
+            border-radius: 12px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .fila-botones {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        button { padding: 6px 8px; cursor: pointer; background: #e67e22; color: white; border: none; border-radius: 6px; font-size: 9px; font-weight: bold; transition: all 0.15s ease; box-shadow: 0 3px rgba(0,0,0,0.4); }
+        button:hover { filter: brightness(1.15); }
+        button:active { transform: translateY(2px); box-shadow: 0 1px rgba(0,0,0,0.4); }
+        button:disabled { background: #7f8c8d !important; opacity: 0.5; cursor: not-allowed; box-shadow: none; transform: none !important; }
+        .btn-accion { background: #27ae60; font-size: 11px; padding: 7px 12px; }
+        .btn-menu { background: #34495e; }
+        .btn-rebirth { background: #8e44ad !important; }
+        .btn-volver { background: #c0392b !important; }
+        .btn-tiendageneral { background: #2980b9 !important; }
+        .btn-agua { background: #00cec9 !important; color: #2d3436 !important; }
+
+        #menuCodigos, #menuAdmin, #menuRebirth { display: none; position: absolute; top: 3%; left: 3%; width: 94%; height: 80%; background: #fdf6e3; padding: 12px; border: 4px solid #8b4513; border-radius: 12px; text-align: center; color: #5d4037; z-index: 30; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        
+        /* DISEÑO MODERNO Y UNIFICADO PARA HUEVOS, TIENDA GENERAL, LOGROS Y HACHAS */
+        #menuHuevos, #menuTiendaGeneral, #menuLogros, #menuHachas {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 420px;
+            max-height: 85vh;
+            background: linear-gradient(135deg, #2c3e50, #1a252f);
+            border: 4px solid #f1c40f;
+            border-radius: 16px;
+            padding: 15px;
+            z-index: 40;
+            color: #fff;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+            box-sizing: border-box;
+            text-align: center;
+            overflow-y: auto;
+        }
+
+        #menuHuevos h2, #menuTiendaGeneral h2, #menuLogros h2, #menuHachas h2 {
+            margin-top: 0;
+            color: #f1c40f;
+            font-size: 18px;
+            text-shadow: 2px 2px #000;
+            border-bottom: 2px dashed #f1c40f;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        /* Tarjetas estilizadas unificadas */
+        #menuHuevos .item-slot, #menuTiendaGeneral .item-slot, #menuLogros .item-slot, #menuHachas .item-slot {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(241, 196, 15, 0.4);
+            margin: 8px 0;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px;
+            font-size: 11px;
+            color: #ecf0f1;
+            backdrop-filter: blur(4px);
+            text-align: left;
+        }
+
+        #menuHuevos .item-slot strong, #menuTiendaGeneral .item-slot strong, #menuHachas .item-slot strong {
+            color: #f39c12;
+            font-size: 12px;
+        }
+
+        #menuHuevos button, #menuTiendaGeneral button, #menuHachas button {
+            background: #27ae60;
+            font-size: 10px;
+            height: 32px;
+            width: 80px;
+            border-radius: 6px;
+            font-weight: bold;
+            box-shadow: 0 3px rgba(0,0,0,0.3);
+        }
+
+        #menuLogros .item-slot div {
+            font-size: 11px;
+            color: #ecf0f1;
+        }
+
+        #menuLogros .item-slot span {
+            font-size: 10px;
+        }
+
+        #menuInventario {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 420px;
+            max-height: 85vh;
+            background: linear-gradient(135deg, #3e2723, #21100b);
+            border: 4px solid #f1c40f;
+            border-radius: 16px;
+            padding: 15px;
+            z-index: 40;
+            color: #fff;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+            box-sizing: border-box;
+            text-align: center;
+            overflow-y: auto;
+        }
+        #menuInventario h2 {
+            margin-top: 0;
+            color: #f1c40f;
+            font-size: 18px;
+            text-shadow: 2px 2px #000;
+            border-bottom: 2px dashed #f1c40f;
+            padding-bottom: 8px;
+        }
+        .inv-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 10px 0;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+        .inv-slot {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid #8b4513;
+            border-radius: 10px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 85px;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .inv-slot.equipado {
+            border-color: #2ecc71;
+            background: rgba(46, 204, 113, 0.15);
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+        }
+        .inv-slot strong {
+            font-size: 10px;
+            color: #f39c12;
+            margin-bottom: 2px;
+        }
+        .inv-slot span {
+            font-size: 9px;
+            color: #ecf0f1;
+            margin-bottom: 4px;
+        }
+        .inv-slot button {
+            width: 100%;
+            height: 24px;
+            font-size: 8px;
+            background: #27ae60;
+            border-radius: 4px;
+        }
+        .inv-slot.equipado button {
+            background: #c0392b;
+        }
+        .inv-vacio {
+            grid-column: span 3;
+            color: #bdc3c7;
+            font-size: 11px;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        #menuStock { display: none; position: absolute; top: 2%; left: 2%; width: 96%; height: 85%; background: linear-gradient(135deg, #2c3e50, #1a252f); padding: 15px; border: 4px solid #f1c40f; border-radius: 15px; text-align: center; color: #fff; z-index: 30; overflow-y: auto; box-shadow: 0 15px 35px rgba(0,0,0,0.7); box-sizing: border-box; }
+        #menuStock h2 { margin-top: 0; color: #f1c40f; font-size: 18px; text-shadow: 2px 2px #000; border-bottom: 2px dashed #f1c40f; padding-bottom: 8px; }
+        .stock-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; padding: 5px 0; margin-bottom: 15px; }
+        .stock-card { background: rgba(255, 255, 255, 0.1); border: 2px solid #f1c40f; border-radius: 10px; padding: 8px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; backdrop-filter: blur(4px); transition: transform 0.2s; }
+        .stock-card:hover { transform: translateY(-2px); background: rgba(255, 255, 255, 0.15); }
+        .stock-card strong { font-size: 11px; color: #f39c12; margin-bottom: 3px; }
+        .stock-card span { font-size: 10px; color: #ecf0f1; margin-bottom: 6px; }
+        .stock-card button { width: 100%; height: 28px; background: #27ae60; font-size: 10px; border-radius: 4px; box-shadow: 0 2px rgba(0,0,0,0.4); }
+
+        #btnCodigo { position: absolute; top: 10px; right: 10px; background: #9b59b6; z-index: 10; width: auto; height: 32px; font-size: 10px; display: none; }
+        #btnAdmin { position: absolute; top: 48px; right: 10px; background: #c0392b; display: none; z-index: 10; width: auto; height: 32px; font-size: 10px; }
+        #timerStock { color: #f1c40f; font-weight: bold; }
+        #msgVenta { position: absolute; top: 55px; left: 50%; transform: translateX(-50%); color: #f1c40f; font-weight: bold; font-size: 15px; z-index: 20; text-shadow: 2px 2px #000; pointer-events: none; transition: opacity 0.5s; opacity: 0; }
+        .madecoin { position: absolute; width: 18px; height: 18px; background: #f1c40f; border: 2px solid #8b4513; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 9px; color: #5d4037; font-weight: bold; z-index: 25; transition: all 0.8s ease-in-out; pointer-events: none; }
+        .ui-madecoin { display: inline-flex; width: 14px; height: 14px; background: #f1c40f; border: 1.5px solid #8b4513; border-radius: 50%; justify-content: center; align-items: center; font-size: 8px; color: #5d4037; font-weight: bold; vertical-align: middle; margin-left: 2px; }
+        canvas { display: block; image-rendering: pixelated; width: 100%; height: 100%; }
+
+        .dmg-popup {
+            position: absolute;
+            color: #fff;
+            font-weight: bold;
+            font-size: 14px;
+            text-shadow: 2px 2px 0px #000;
+            pointer-events: none;
+            z-index: 40;
+            animation: floatUp 0.6s ease-out forwards;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-40px) scale(1.2); opacity: 0; }
+        }
+        .tree-bar-container {
+            position: absolute;
+            width: 80px;
+            height: 8px;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid #fff;
+            border-radius: 4px;
+            transform: translateX(-50%);
+            z-index: 15;
+            display: none;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .tree-bar-fill {
+            height: 100%;
+            background: #2ecc71;
+            width: 100%;
+            transition: width 0.1s linear;
+        }
+        #growthTimerDisplay {
+            position: absolute;
+            color: #f1c40f;
+            font-weight: bold;
+            font-size: 12px;
+            text-shadow: 2px 2px #000;
+            transform: translateX(-50%);
+            z-index: 16;
+            display: none;
+            pointer-events: none;
+            background: rgba(0,0,0,0.7);
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid #f1c40f;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="menuPrincipal">
+        <h1>🪓 Axe Master 🌲</h1>
+        <div class="subtitulo">PIXEL BETA EDITION</div>
+        <div class="menu-btn-container">
+            <button id="btnJugar">🎮 Jugar</button>
+            <button id="btnEntorno">🌄 Entorno</button>
+            <button id="btnSkin">👕 Skin</button>
+        </div>
+    </div>
+
+    <div id="menuSkins">
+        <h2>SELECCIONAR SKIN</h2>
+        <div class="opcion-grid">
+            <button onclick="seleccionarSkin(0)">Clásica (Amarillo/Azul)</button>
+            <button onclick="seleccionarSkin(1)">Fuego (Rojo/Oscuro)</button>
+            <button onclick="seleccionarSkin(2)">Naturaleza (Verde/Dorado)</button>
+            <button onclick="seleccionarSkin(3)">Mística (Morado/Turquesa)</button>
+        </div>
+        <button onclick="cerrarMenuSkins()" style="width:100px; height:30px; background:#c0392b;">Cerrar</button>
+    </div>
+
+    <div id="menuFondos">
+        <h2>SELECCIONAR ENTORNO</h2>
+        <div class="opcion-grid">
+            <button onclick="seleccionarFondo(0)">Pradera (Clásico)</button>
+            <button onclick="seleccionarFondo(1)">Montañas (Paisaje)</button>
+            <button onclick="seleccionarFondo(2)">Ciudad (Edificios)</button>
+            <button onclick="seleccionarFondo(3)">Carretera (Asfalto)</button>
+        </div>
+        <button onclick="cerrarMenuFondos()" style="width:100px; height:30px; background:#c0392b;">Cerrar</button>
+    </div>
+
+    <div id="ui">
+        <h2>Dinero: <span class="ui-madecoin">🪵</span><span id="dinero">50</span> | Renacimientos: <span id="numRebirth">0</span></h2>
+        <h3>Madera: Nor: <span id="madera">0</span> | Bla: <span id="mBlanca">0</span> | Nev: <span id="mNevada">0</span> | Pin: <span id="mPino">0</span> | Oro: <span id="mEsp1">0</span> | Rub: <span id="mEsp2">0</span> | Dia: <span id="mEsp3">0</span> | Grav: <span id="mGravedad">0</span> | Som: <span id="mSombra">0</span> | Arc: <span id="mArcoiris">0</span> | Mag: <span id="mMagma">0</span> | Cos: <span id="mCosmica">0</span> | Ete: <span id="mEterno">0</span> | Voi: <span id="mVoid">0</span></h3>
+        <h3>Brotes: Bas: <span id="brotes">1</span> | Bla: <span id="brotesBlancos">0</span> | Nev: <span id="brotesNevados">0</span> | Pin: <span id="brotesPinos">0</span> | Dor: <span id="bEsp1">0</span> | Rub: <span id="bEsp2">0</span> | Dia: <span id="bEsp3">0</span> | Gal: <span id="bGalactico">0</span> | Som: <span id="bSombra">0</span> | Arc: <span id="bArcoiris">0</span> | Mag: <span id="bMagma">0</span> | Cos: <span id="bCosmico">0</span> | Ete: <span id="bEterno">0</span> | Voi: <span id="bVoid">0</span> | Cubos Agua: <span id="cantCubosAgua">0</span></h3>
+    </div>
+    <div id="msgVenta"></div>
+    <div id="treeBarContainer" class="tree-bar-container"><div id="treeBarFill" class="tree-bar-fill"></div></div>
+    <div id="growthTimerDisplay">0.0s</div>
+
+    <button id="btnCodigo" onclick="toggleMenu('menuCodigos')">CÓDIGOS</button>
+    <button id="btnAdmin" onclick="toggleMenu('menuAdmin')">ADMIN</button>
+
+    <div id="menuCodigos"><h2>INTRODUCIR CÓDIGO</h2><input type="text" id="inputCodigo" placeholder="Escribe el código"><button onclick="verificarCodigo()" style="width:100px; height:32px;">VERIFICAR</button><p id="msgCodigo"></p><button onclick="toggleMenu('menuCodigos')" style="width:100px; height:32px;">Cerrar</button></div>
+    <div id="menuAdmin">
+        <h2>ADMIN PANEL 🔥</h2>
+        <input type="number" id="admDinero" placeholder="Dinero"><button onclick="setDinero()" style="width:100px; height:32px;">Set Dinero</button><br><br>
+        <input type="number" id="admBrotes" placeholder="Tipo (1-14)"><button onclick="setBrotes()" style="width:100px; height:32px;">Dar Brote</button><br><br>
+        <input type="number" id="admMascotaTipo" placeholder="Tipo Huevo (1-4)"><input type="number" id="admMascotaMult" placeholder="Multiplicador"><button onclick="darMascotaAdmin()" style="width:120px; height:32px; background:#27ae60;">Dar Mascota</button><br><br>
+        <button onclick="darHachaArcoiris()" style="width:140px; height:32px; background:#9b59b6;">Hacha de Admin</button><br><br>
+        <button onclick="toggleMenu('menuAdmin')" style="width:100px; height:32px;">Cerrar</button>
+    </div>
+
+    <div id="menuStock">
+        <h2>STOCK DE BROTES 📦 <span id="timerStock">05:00</span></h2>
+        <div class="stock-grid">
+            <div class="stock-card"><div><strong>Básico ($10)</strong><br><span>Stock: <span id="stockB">10</span></span></div><button onclick="comprarBrote()">COMPRAR</button></div>
+            <div class="stock-card"><div><strong>Blanco ($50)</strong><br><span>Stock: <span id="stockBl">0</span></span></div><button onclick="comprarBroteBlanco()">COMPRAR</button></div>
+            <div class="stock-card"><div><strong>Nevado ($250)</strong><br><span>Stock: <span id="stockN">0</span></span></div><button onclick="comprarBroteNevado()">COMPRAR</button></div>
+            <div class="stock-card"><div><strong>Pino ($1,000)</strong><br><span>Stock: <span id="stockP">0</span></span></div><button onclick="comprarBrotePino()">COMPRAR</button></div>
+            <div class="stock-card"><div><strong>B.Dorado ($1,000)</strong><br><span>Stock: <span id="stockE1">0</span></span></div><button onclick="comprarBroteEsp1()">COMPRAR</button></div>
+            <div class="stock-card"><div><strong>B.Rubí ($2,500)</strong><br><span>Stock: <span id="stockE2">0</span></span></div><button onclick="comprarBroteEsp2()">COMPRAR</button></div>
+            <div class="stock-card"><div><strong>B.Diamante ($5,000)</strong><br><span>Stock: <span id="stockE3">0</span></span></div><button onclick="comprarBroteEsp3()">COMPRAR</button></div>
+            <div class="stock-card"><div><strong>Gravedad ($10,000)</strong><br><span>Stock: <span id="stockG">0</span></span></div><button onclick="comprarBroteGalactico()">COMPRAR</button></div>
+            <div class="stock-card"><div><strong>Sombra ($20,000)</strong><br><span>Stock: <span id="stockS">0</span></span></div><button onclick="comprarBroteSombra()">COMPRAR</button></div>
+            <div class="stock-card"><div><strong>Arcoiris ($50,000)</strong><br><span>Stock: <span id="stockArc">0</span></span></div><button onclick="comprarBroteArcoiris()">COMPRAR</button></div>
+            <div class="stock-card"><div><strong>Magma ($100k)</strong><br><span>Stock: <span id="stockMagma">0</span></span></div><button onclick="comprarBroteMagma()">COMPRAR</button></div>
+            <div class="stock-card"><div><strong>Cósmico ($250k)</strong><br><span>Stock: <span id="stockCosmico">0</span></span></div><button onclick="comprarBroteCosmico()">COMPRAR</button></div>
+            <div class="stock-card"><div><strong>Eterno ($500k)</strong><br><span>Stock: <span id="stockEterno">0</span></span></div><button onclick="comprarBroteEterno()">COMPRAR</button></div>
+            <div class="stock-card"><div><strong>Void ($1M)</strong><br><span>Stock: <span id="stockVoid">0</span></span></div><button onclick="comprarBroteVoid()">COMPRAR</button></div>
+        </div>
+        <button onclick="toggleMenu('menuStock')" style="width:120px; height:34px; background:#c0392b; font-size:11px;">Cerrar</button>
+    </div>
+
+    <!-- TIENDA GENERAL REDISEÑADA -->
+    <div id="menuTiendaGeneral">
+        <h2>TIENDA GENERAL 🛒</h2>
+        <div class="item-slot">
+            <div style="flex: 1;">
+                <strong>Cubo con Agua 💧</strong><br>
+                <span style="color: #f1c40f; font-size: 10px;">Precio: $200</span><br>
+                <span style="font-size: 9px; color: #bdc3c7;">Acelera el crecimiento un 20%.</span>
+            </div>
+            <button onclick="comprarCuboAgua()">COMPRAR</button>
+        </div>
+        <button onclick="toggleMenu('menuTiendaGeneral')" style="width:110px; height:35px; background:#c0392b; margin-top: 15px; font-size:11px;">Cerrar</button>
+    </div>
+
+    <!-- TIENDA DE HUEVOS REDISEÑADA -->
+    <div id="menuHuevos">
+        <h2>TIENDA DE HUEVOS 🥚</h2>
+        <div class="item-slot">
+            <div style="flex: 1;">
+                <strong>Huevo Básico</strong><br><span style="color: #f1c40f; font-size: 10px;">Precio: $500</span><br>
+                <span style="font-size: 9px; color: #bdc3c7;">Gato (70%): x1.5 | Perro (30%): x2.0</span>
+            </div>
+            <button onclick="comprarHuevo(1)">COMPRAR</button>
+        </div>
+        <div class="item-slot">
+            <div style="flex: 1;">
+                <strong>Huevo Pro</strong><br><span style="color: #f1c40f; font-size: 10px;">Precio: $5,000</span><br>
+                <span style="font-size: 9px; color: #bdc3c7;">Zorro (60%) | Lobo (30%) | Oso (10%)</span>
+            </div>
+            <button onclick="comprarHuevo(2)">COMPRAR</button>
+        </div>
+        <div class="item-slot">
+            <div style="flex: 1;">
+                <strong>Huevo Mítico</strong><br><span style="color: #f1c40f; font-size: 10px;">Precio: $25,000</span><br>
+                <span style="font-size: 9px; color: #bdc3c7;">Fénix (60%) | Dragón (30%) | Grifón (10%)</span>
+            </div>
+            <button onclick="comprarHuevo(3)">COMPRAR</button>
+        </div>
+        <div class="item-slot">
+            <div style="flex: 1;">
+                <strong>Huevo Arcoiris</strong><br><span style="color: #f1c40f; font-size: 10px;">Precio: $100,000</span><br>
+                <span style="font-size: 9px; color: #bdc3c7;">Celestial | Galáctico | Supremo (x100)</span>
+            </div>
+            <button onclick="comprarHuevo(4)">COMPRAR</button>
+        </div>
+        <button onclick="toggleMenu('menuHuevos')" style="width:110px; height:35px; background:#c0392b; margin-top: 15px; font-size:11px;">Cerrar</button>
+    </div>
+
+    <!-- MOCHILA DE MASCOTAS -->
+    <div id="menuInventario">
+        <h2>MOCHILA DE MASCOTAS 🎒 <span style="font-size:11px; color:#f1c40f;">(Equipadas: <span id="numEquipadas">0</span>/2)</span></h2>
+        <div class="inv-grid" id="listaMascotas">
+        </div>
+        <button onclick="toggleMenu('menuInventario')" style="width:100px; height:32px; background:#c0392b; margin-top: 10px;">Cerrar</button>
+    </div>
+
+    <!-- LOGROS Y MISIONES REDISEÑADOS -->
+    <div id="menuLogros">
+        <h2>LOGROS Y MISIONES 🏆</h2>
+        <div class="item-slot">
+            <div style="flex: 1;"><strong>Cortar 10 árboles</strong><br><span id="progLogro1" style="color:#f1c40f; font-size:10px;">0/10</span></div>
+            <span id="estadoLogro1" style="color:#e74c3c; font-weight:bold; font-size:10px; text-align:right;">PENDIENTE</span>
+        </div>
+        <div class="item-slot">
+            <div style="flex: 1;"><strong>Conseguir una mascota</strong><br><span id="progLogro2" style="color:#f1c40f; font-size:10px;">0/1</span></div>
+            <span id="estadoLogro2" style="color:#e74c3c; font-weight:bold; font-size:10px; text-align:right;">PENDIENTE</span>
+        </div>
+        <div class="item-slot">
+            <div style="flex: 1;"><strong>Acumular $5,000</strong><br><span id="progLogro3" style="color:#f1c40f; font-size:10px;">50/5000</span></div>
+            <span id="estadoLogro3" style="color:#e74c3c; font-weight:bold; font-size:10px; text-align:right;">PENDIENTE</span>
+        </div>
+        <div class="item-slot">
+            <div style="flex: 1;"><strong>Hacer 1 Renacimiento</strong><br><span id="progLogro4" style="color:#f1c40f; font-size:10px;">0/1</span></div>
+            <span id="estadoLogro4" style="color:#e74c3c; font-weight:bold; font-size:10px; text-align:right;">PENDIENTE</span>
+        </div>
+        <div class="item-slot">
+            <div style="flex: 1;"><strong>Cortar 50 árboles</strong><br><span id="progLogro5" style="color:#f1c40f; font-size:10px;">0/50</span></div>
+            <span id="estadoLogro5" style="color:#e74c3c; font-weight:bold; font-size:10px; text-align:right;">PENDIENTE</span>
+        </div>
+        <div class="item-slot">
+            <div style="flex: 1;"><strong>Acumular $100,000</strong><br><span id="progLogro6" style="color:#f1c40f; font-size:10px;">50/100000</span></div>
+            <span id="estadoLogro6" style="color:#e74c3c; font-weight:bold; font-size:10px; text-align:right;">PENDIENTE</span>
+        </div>
+        <button onclick="toggleMenu('menuLogros')" style="width:110px; height:35px; background:#c0392b; margin-top: 15px; font-size:11px;">Cerrar</button>
+    </div>
+    
+    <div id="menuRebirth">
+        <h2>SISTEMA DE RENACIMIENTO ✨</h2>
+        <p>¡Haz un renacimiento para obtener multiplicadores permanentes de dinero y velocidad!</p>
+        <p>Requisito: $100,000</p>
+        <button onclick="hacerRebirth()" style="width:120px; height:32px; background:#8e44ad;">RENACER</button><br><br>
+        <button onclick="toggleMenu('menuRebirth')" style="width:100px; height:32px;">Cerrar</button>
+    </div>
+
+    <!-- TIENDA DE HACHAS REDISEÑADA -->
+    <div id="menuHachas">
+        <h2>TIENDA DE HACHAS 🪓</h2>
+        <div class="item-slot">
+            <div style="flex: 1;"><strong>Hierro</strong><br><span style="color: #f1c40f; font-size: 10px;">Precio: $25</span><br><span style="font-size: 9px; color: #bdc3c7;">Daño: 3</span></div>
+            <button onclick="comprarHacha(3, 25, 0x95a5a6)">COMPRAR</button>
+        </div>
+        <div class="item-slot">
+            <div style="flex: 1;"><strong>Oro</strong><br><span style="color: #f1c40f; font-size: 10px;">Precio: $40</span><br><span style="font-size: 9px; color: #bdc3c7;">Daño: 4</span></div>
+            <button onclick="comprarHacha(4, 40, 0xf1c40f)">COMPRAR</button>
+        </div>
+        <div class="item-slot">
+            <div style="flex: 1;"><strong>Diamante</strong><br><span style="color: #f1c40f; font-size: 10px;">Precio: $50</span><br><span style="font-size: 9px; color: #bdc3c7;">Daño: 5</span></div>
+            <button onclick="comprarHacha(5, 50, 0x3498db)">COMPRAR</button>
+        </div>
+        <div class="item-slot">
+            <div style="flex: 1;"><strong>Esmeralda</strong><br><span style="color: #f1c40f; font-size: 10px;">Precio: $100</span><br><span style="font-size: 9px; color: #bdc3c7;">Daño: 10</span></div>
+            <button onclick="comprarHacha(10, 100, 0x27ae60)">COMPRAR</button>
+        </div>
+        <div class="item-slot">
+            <div style="flex: 1;"><strong>Obsidiana</strong><br><span style="color: #f1c40f; font-size: 10px;">Precio: $250</span><br><span style="font-size: 9px; color: #bdc3c7;">Daño: 15</span></div>
+            <button onclick="comprarHacha(15, 250, 0x8e44ad)">COMPRAR</button>
+        </div>
+        <div class="item-slot">
+            <div style="flex: 1;"><strong>Ruby</strong><br><span style="color: #f1c40f; font-size: 10px;">Precio: $500</span><br><span style="font-size: 9px; color: #bdc3c7;">Daño: 20</span></div>
+            <button onclick="comprarHacha(20, 500, 0xc0392b)">COMPRAR</button>
+        </div>
+        <div class="item-slot">
+            <div style="flex: 1;"><strong>Netherite</strong><br><span style="color: #f1c40f; font-size: 10px;">Precio: $1,000</span><br><span style="font-size: 9px; color: #bdc3c7;">Daño: 30</span></div>
+            <button onclick="comprarHacha(30, 1000, 0x2c3e50)">COMPRAR</button>
+        </div>
+        <div class="item-slot">
+            <div style="flex: 1;"><strong>Magma</strong><br><span style="color: #f1c40f; font-size: 10px;">Precio: $5,000</span><br><span style="font-size: 9px; color: #bdc3c7;">Daño: 45</span></div>
+            <button onclick="comprarHacha(45, 5000, 0xd35400)">COMPRAR</button>
+        </div>
+        <div class="item-slot">
+            <div style="flex: 1;"><strong>Galáctica</strong><br><span style="color: #f1c40f; font-size: 10px;">Precio: $25,000</span><br><span style="font-size: 9px; color: #bdc3c7;">Daño: 70</span></div>
+            <button onclick="comprarHacha(70, 25000, 0x8e44ad)">COMPRAR</button>
+        </div>
+        <div class="item-slot">
+            <div style="flex: 1;"><strong>Celestial</strong><br><span style="color: #f1c40f; font-size: 10px;">Precio: $100k</span><br><span style="font-size: 9px; color: #bdc3c7;">Daño: 100</span></div>
+            <button onclick="comprarHacha(100, 100000, 0xf1c40f)">COMPRAR</button>
+        </div>
+        <div class="item-slot">
+            <div style="flex: 1;"><strong>Eternium</strong><br><span style="color: #f1c40f; font-size: 10px;">Precio: $300k</span><br><span style="font-size: 9px; color: #bdc3c7;">Daño: 150</span></div>
+            <button onclick="comprarHacha(150, 300000, 0x1abc9c)">COMPRAR</button>
+        </div>
+        <div class="item-slot">
+            <div style="flex: 1;"><strong>Void Crusher</strong><br><span style="color: #f1c40f; font-size: 10px;">Precio: $1M</span><br><span style="font-size: 9px; color: #bdc3c7;">Daño: 250</span></div>
+            <button onclick="comprarHacha(250, 1000000, 0x2c3e50)">COMPRAR</button>
+        </div>
+        <button onclick="toggleMenu('menuHachas')" style="width:110px; height:35px; background:#c0392b; margin-top: 15px; font-size:11px;">Cerrar</button>
+    </div>
+
+    <div class="botones-menu" id="panelBotonesJuego">
+        <div class="fila-botones">
+            <button class="btn-menu" onclick="toggleMenu('menuStock')">📦 Stock</button>
+            <button class="btn-tiendageneral" onclick="toggleMenu('menuTiendaGeneral')">🛒 T.General</button>
+            <button class="btn-agua" onclick="usarCuboAgua()">💧 Echar Agua</button>
+            <button class="btn-menu" onclick="toggleMenu('menuHachas')">🪓 Hachas</button>
+            <button class="btn-menu" onclick="toggleMenu('menuHuevos')">🥚 Huevos</button>
+            <button class="btn-menu" onclick="toggleMenu('menuInventario')">🎒 Inv</button>
+            <button class="btn-menu" onclick="toggleMenu('menuLogros')">🏆 Logros</button>
+            <button class="btn-rebirth" onclick="toggleMenu('menuRebirth')">✨ Renacer</button>
+            <button class="btn-accion" onclick="venderMadera()">💰 Vender</button>
+            <button class="btn-volver" onclick="volverAlMenuPrincipal()">🏠 Menú</button>
+        </div>
+        <div class="fila-botones" style="border-top: 1px solid rgba(255,255,255,0.2); padding-top: 4px;">
+            <button id="btnPlantar" onclick="plantar(0)">🌱 Básico</button>
+            <button id="btnPlantarBlanco" onclick="plantar(1)" style="background:#2980b9;">🌲 Blanco</button>
+            <button id="btnPlantarNevado" onclick="plantar(2)" style="background:#bdc3c7; color:black;">❄️ Nevado</button>
+            <button id="btnPlantarPino" onclick="plantar(3)" style="background:#27ae60;">🌲 Pino</button>
+            <button id="btnPlantarEsp1" onclick="plantar(4)" style="background:#f1c40f; color:black;">⭐ Dorado</button>
+            <button id="btnPlantarEsp2" onclick="plantar(5)" style="background:#e74c3c;">💎 Rubí</button>
+            <button id="btnPlantarEsp3" onclick="plantar(6)" style="background:#3498db;">💠 Diam</button>
+            <button id="btnPlantarGalactico" onclick="plantar(7)" style="background:#8e44ad;">🌌 Grav</button>
+            <button id="btnPlantarSombra" onclick="plantar(8)" style="background:#111111;">🖤 Sombra</button>
+            <button id="btnPlantarArcoiris" onclick="plantar(9)" style="background:linear-gradient(to right, red, orange, yellow, green, blue, violet);">🌈 Arco</button>
+            <button id="btnPlantarMagma" onclick="plantar(10)" style="background:#d35400;">🔥 Magma</button>
+            <button id="btnPlantarCosmico" onclick="plantar(11)" style="background:#2980b9;">🪐 Cósmico</button>
+            <button id="btnPlantarEterno" onclick="plantar(12)" style="background:#1abc9c;">💎 Eterno</button>
+            <button id="btnPlantarVoid" onclick="plantar(13)" style="background:#000000; border: 1px solid #fff;">🌀 Void</button>
+        </div>
+    </div>
+
+<script>
+    function pix(mat) { mat.magFilter = THREE.NearestFilter; mat.minFilter = THREE.NearestFilter; return mat; }
+    let danoPorGolpe = 1, dinero = 50, arbolCortado = false, tipoArbol = 0;
+    let estaCreciendo = false;
+    let tiempoRestanteCrecimiento = 0;
+    let tiempoTotalCrecimiento = 1;
+    let cubosAgua = 0;
+
+    let inventarioMascotas = [];
+    let mascotasEquipadas = [];
+    let arbolesCortadosTotal = 0;
+    let logro1Completado = false;
+    let logro2Completado = false;
+    let logro3Completado = false;
+    let logro4Completado = false;
+    let logro5Completado = false;
+    let logro6Completado = false;
+    let esHachaArcoiris = false;
+    let rebirths = 0;
+    let mNormal = 0, mBlanca = 0, mNevada = 0, mPino = 0, mEsp1 = 0, mEsp2 = 0, mEsp3 = 0, mGravedad = 0, mSombra = 0, mArcoiris = 0, mMagma = 0, mCosmica = 0, mEterno = 0, mVoid = 0, vidaActual = 0, vidaMax = 1;
+    let timer = 300;
+
+    const coloresSkins = [
+        { main: 0xffff00, torsoB: 0x0000ff },
+        { main: 0xe74c3c, torsoB: 0x2c3e50 },
+        { main: 0x2ecc71, torsoB: 0xf1c40f },
+        { main: 0x9b59b6, torsoB: 0x1abc9c }
+    ];
+
+    function jugarJuego() {
+        document.getElementById('menuPrincipal').style.display = 'none';
+        document.getElementById('ui').style.display = 'block';
+        document.getElementById('btnCodigo').style.display = 'block';
+        document.getElementById('panelBotonesJuego').style.display = 'flex';
+    }
+
+    function volverAlMenuPrincipal() {
+        document.getElementById('menuPrincipal').style.display = 'flex';
+        document.getElementById('ui').style.display = 'none';
+        document.getElementById('btnCodigo').style.display = 'none';
+        document.getElementById('btnAdmin').style.display = 'none';
+        document.getElementById('panelBotonesJuego').style.display = 'none';
+        ['menuStock', 'menuTiendaGeneral', 'menuHachas', 'menuHuevos', 'menuInventario', 'menuLogros', 'menuRebirth', 'menuCodigos', 'menuAdmin', 'menuSkins', 'menuFondos'].forEach(id => {
+            document.getElementById(id).style.display = 'none';
+        });
+    }
+
+    function abrirMenuSkins() { document.getElementById('menuSkins').style.display = 'block'; }
+    function cerrarMenuSkins() { document.getElementById('menuSkins').style.display = 'none'; }
+    function seleccionarSkin(index) {
+        let skin = coloresSkins[index];
+        matAmarillo.color.set(skin.main);
+        torsoAzul.material.color.set(skin.torsoB);
+        cerrarMenuSkins();
+    }
+
+    function abrirMenuFondos() { document.getElementById('menuFondos').style.display = 'block'; }
+    function cerrarMenuFondos() { document.getElementById('menuFondos').style.display = 'none'; }
+
+    window.addEventListener('load', function() {
+        document.getElementById('btnJugar').addEventListener('click', jugarJuego);
+        document.getElementById('btnEntorno').addEventListener('click', abrirMenuFondos);
+        document.getElementById('btnSkin').addEventListener('click', abrirMenuSkins);
+    });
+
+    const elementosEntorno = new THREE.Group();
+    const scene = new THREE.Scene(); 
+    scene.add(elementosEntorno);
+    scene.background = new THREE.Color(0x87CEEB); 
+
+    const suelo = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), pix(new THREE.MeshStandardMaterial({color: 0x228B22})));
+    suelo.rotation.x = -Math.PI/2; suelo.position.y = -0.05; scene.add(suelo);
+
+    function limpiarEntorno() {
+        while(elementosEntorno.children.length > 0) {
+            elementosEntorno.remove(elementosEntorno.children[0]);
+        }
+    }
+
+    function seleccionarFondo(tipo) {
+        limpiarEntorno();
+        if(tipo === 0) {
+            scene.background.set(0x87CEEB);
+            suelo.material.color.set(0x228B22);
+        } else if(tipo === 1) {
+            scene.background.set(0x52b788);
+            suelo.material.color.set(0x40916c);
+            for(let i = -4; i <= 4; i += 2) {
+                if(i === 0) continue;
+                let mGeo = new THREE.ConeGeometry(2 + Math.random(), 4 + Math.random() * 2, 4);
+                let mMat = pix(new THREE.MeshStandardMaterial({color: 0x2d6a4f}));
+                let montana = new THREE.Mesh(mGeo, mMat);
+                montana.position.set(i * 3, 2, -8);
+                elementosEntorno.add(montana);
+            }
+        } else if(tipo === 2) {
+            scene.background.set(0x1a1a2e);
+            suelo.material.color.set(0x16213e);
+            for(let i = -5; i <= 5; i += 2) {
+                if(Math.abs(i) <= 1) continue;
+                let h = 3 + Math.random() * 4;
+                let eGeo = new THREE.BoxGeometry(1.5, h, 1.5);
+                let eMat = pix(new THREE.MeshStandardMaterial({color: 0x0f3460}));
+                let edificio = new THREE.Mesh(eGeo, eMat);
+                edificio.position.set(i * 2.2, h/2 - 0.05, -6);
+                elementosEntorno.add(edificio);
+            }
+        } else if(tipo === 3) {
+            scene.background.set(0x334155);
+            suelo.material.color.set(0x475569);
+            let pistaGeo = new THREE.PlaneGeometry(3, 30);
+            let pistaMat = pix(new THREE.MeshStandardMaterial({color: 0x1e293b}));
+            let pista = new THREE.Mesh(pistaGeo, pistaMat);
+            pista.rotation.x = -Math.PI/2;
+            pista.position.set(0, -0.04, 0);
+            elementosEntorno.add(pista);
+
+            let lineaGeo = new THREE.PlaneGeometry(0.2, 30);
+            let lineaMat = pix(new THREE.MeshStandardMaterial({color: 0xfacc15}));
+            let linea = new THREE.Mesh(lineaGeo, lineaMat);
+            linea.rotation.x = -Math.PI/2;
+            linea.position.set(0, -0.03, 0);
+            elementosEntorno.add(linea);
+        }
+        cerrarMenuFondos();
+    }
+
+    function toggleMenu(id) { const menu = document.getElementById(id); menu.style.display = (menu.style.display === 'block') ? 'none' : 'block'; }
+    function restock() {
+        document.getElementById('stockB').innerText = 10;
+        document.getElementById('stockBl').innerText = (Math.random() < 0.8) ? Math.floor(Math.random() * 15) + 5 : 0;
+        document.getElementById('stockN').innerText = (Math.random() < 0.7) ? Math.floor(Math.random() * 10) + 3 : 0;
+        document.getElementById('stockP').innerText = (Math.random() < 0.6) ? Math.floor(Math.random() * 8) + 2 : 0;
+        document.getElementById('stockE1').innerText = (Math.random() < 0.5) ? Math.floor(Math.random() * 5) + 1 : 0;
+        document.getElementById('stockE2').innerText = (Math.random() < 0.4) ? Math.floor(Math.random() * 4) + 1 : 0;
+        document.getElementById('stockE3').innerText = (Math.random() < 0.35) ? Math.floor(Math.random() * 3) + 1 : 0;
+        document.getElementById('stockG').innerText = (Math.random() < 0.3) ? Math.floor(Math.random() * 3) + 1 : 0;
+        document.getElementById('stockS').innerText = (Math.random() < 0.25) ? Math.floor(Math.random() * 2) + 1 : 0;
+        document.getElementById('stockArc').innerText = (Math.random() < 0.2) ? 1 : 0;
+        document.getElementById('stockMagma').innerText = (Math.random() < 0.15) ? 1 : 0;
+        document.getElementById('stockCosmico').innerText = (Math.random() < 0.1) ? 1 : 0;
+        document.getElementById('stockEterno').innerText = (Math.random() < 0.08) ? 1 : 0;
+        document.getElementById('stockVoid').innerText = (Math.random() < 0.05) ? 1 : 0;
+        timer = 300;
+    }
+    setInterval(() => {
+        timer--;
+        let m = Math.floor(timer/60), s = timer%60;
+        document.getElementById('timerStock').innerText = (m<10?'0'+m:m) + ":" + (s<10?'0'+s:s);
+        if(timer <= 0) restock();
+    }, 1000);
+    restock();
+
+    function comprarCuboAgua() {
+        if(dinero >= 200) {
+            dinero -= 200;
+            cubosAgua++;
+            document.getElementById('dinero').innerText = dinero;
+            document.getElementById('cantCubosAgua').innerText = cubosAgua;
+            alert("¡Has comprado un Cubo con Agua!");
+            verificarLogros();
+        } else {
+            alert("No tienes suficiente dinero ($200 requerido).");
+        }
+    }
+
+    function usarCuboAgua() {
+        if(estaCreciendo && cubosAgua > 0) {
+            cubosAgua--;
+            document.getElementById('cantCubosAgua').innerText = cubosAgua;
+            tiempoRestanteCrecimiento -= (tiempoTotalCrecimiento * 0.20);
+            if(tiempoRestanteCrecimiento < 0) tiempoRestanteCrecimiento = 0;
+            alert("¡Has echado agua al árbol! Crecimiento acelerado un 20%.");
+        } else if(!estaCreciendo) {
+            alert("El árbol no está creciendo en este momento.");
+        } else if(cubosAgua <= 0) {
+            alert("¡No tienes cubos con agua! Cómpralos en la Tienda General.");
+        }
+    }
+
+    function verificarLogros() {
+        if(!logro1Completado && arbolesCortadosTotal >= 10) {
+            logro1Completado = true;
+            document.getElementById('progLogro1').innerText = "10/10";
+            document.getElementById('estadoLogro1').innerText = "COMPLETADO (+$250)";
+            document.getElementById('estadoLogro1').style.color = "#2ecc71";
+            dinero += 250;
+        } else if(!logro1Completado) {
+            document.getElementById('progLogro1').innerText = Math.min(arbolesCortadosTotal, 10) + "/10";
+        }
+
+        if(!logro2Completado && inventarioMascotas.length > 0) {
+            logro2Completado = true;
+            document.getElementById('progLogro2').innerText = "1/1";
+            document.getElementById('estadoLogro2').innerText = "COMPLETADO (+$500)";
+            document.getElementById('estadoLogro2').style.color = "#2ecc71";
+            dinero += 500;
+        }
+
+        if(!logro3Completado && dinero >= 5000) {
+            logro3Completado = true;
+            document.getElementById('progLogro3').innerText = "5000/5000";
+            document.getElementById('estadoLogro3').innerText = "COMPLETADO (+$1500)";
+            document.getElementById('estadoLogro3').style.color = "#2ecc71";
+            dinero += 1500;
+        } else if(!logro3Completado) {
+            document.getElementById('progLogro3').innerText = Math.min(dinero, 5000) + "/5000";
+        }
+
+        if(!logro4Completado && rebirths >= 1) {
+            logro4Completado = true;
+            document.getElementById('progLogro4').innerText = "1/1";
+            document.getElementById('estadoLogro4').innerText = "COMPLETADO (+$5,000)";
+            document.getElementById('estadoLogro4').style.color = "#2ecc71";
+            dinero += 5000;
+        }
+
+        if(!logro5Completado && arbolesCortadosTotal >= 50) {
+            logro5Completado = true;
+            document.getElementById('progLogro5').innerText = "50/50";
+            document.getElementById('estadoLogro5').innerText = "COMPLETADO (+$10k)";
+            document.getElementById('estadoLogro5').style.color = "#2ecc71";
+            dinero += 10000;
+        } else if(!logro5Completado) {
+            document.getElementById('progLogro5').innerText = Math.min(arbolesCortadosTotal, 50) + "/50";
+        }
+
+        if(!logro6Completado && dinero >= 100000) {
+            logro6Completado = true;
+            document.getElementById('progLogro6').innerText = "100k/100k";
+            document.getElementById('estadoLogro6').innerText = "COMPLETADO (+$25k)";
+            document.getElementById('estadoLogro6').style.color = "#2ecc71";
+            dinero += 25000;
+        } else if(!logro6Completado) {
+            document.getElementById('progLogro6').innerText = Math.min(dinero, 100000) + "/100000";
+        }
+
+        document.getElementById('dinero').innerText = dinero;
+    }
+
+    function hacerRebirth() {
+        if(dinero >= 100000) {
+            dinero = 50;
+            rebirths++;
+            danoPorGolpe += 5;
+            document.getElementById('numRebirth').innerText = rebirths;
+            document.getElementById('dinero').innerText = dinero;
+            alert("¡Has renacido con éxito! Daño aumentado permanentemente.");
+            toggleMenu('menuRebirth');
+            verificarLogros();
+        } else {
+            alert("Necesitas $100,000 para renacer.");
+        }
+    }
+
+    function comprarBrote() { if(dinero >= 10 && parseInt(document.getElementById('stockB').innerText) > 0) { dinero -= 10; document.getElementById('brotes').innerText = parseInt(document.getElementById('brotes').innerText)+1; document.getElementById('stockB').innerText--; document.getElementById('dinero').innerText = dinero; actualizarBotones(); } }
+    function comprarBroteBlanco() { if(dinero >= 50 && parseInt(document.getElementById('stockBl').innerText) > 0) { dinero -= 50; document.getElementById('brotesBlancos').innerText = parseInt(document.getElementById('brotesBlancos').innerText)+1; document.getElementById('stockBl').innerText--; document.getElementById('dinero').innerText = dinero; actualizarBotones(); } }
+    function comprarBroteNevado() { if(dinero >= 250 && parseInt(document.getElementById('stockN').innerText) > 0) { dinero -= 250; document.getElementById('brotesNevados').innerText = parseInt(document.getElementById('brotesNevados').innerText)+1; document.getElementById('stockN').innerText--; document.getElementById('dinero').innerText = dinero; actualizarBotones(); } }
+    function comprarBrotePino() { if(dinero >= 1000 && parseInt(document.getElementById('stockP').innerText) > 0) { dinero -= 1000; document.getElementById('brotesPinos').innerText = parseInt(document.getElementById('brotesPinos').innerText)+1; document.getElementById('stockP').innerText--; document.getElementById('dinero').innerText = dinero; actualizarBotones(); } }
+    function comprarBroteEsp1() { if(dinero >= 1000 && parseInt(document.getElementById('stockE1').innerText) > 0) { dinero -= 1000; document.getElementById('bEsp1').innerText = parseInt(document.getElementById('bEsp1').innerText)+1; document.getElementById('stockE1').innerText--; document.getElementById('dinero').innerText = dinero; actualizarBotones(); } }
+    function comprarBroteEsp2() { if(dinero >= 2500 && parseInt(document.getElementById('stockE2').innerText) > 0) { dinero -= 2500; document.getElementById('bEsp2').innerText = parseInt(document.getElementById('bEsp2').innerText)+1; document.getElementById('stockE2').innerText--; document.getElementById('dinero').innerText = dinero; actualizarBotones(); } }
+    function comprarBroteEsp3() { if(dinero >= 5000 && parseInt(document.getElementById('stockE3').innerText) > 0) { dinero -= 5000; document.getElementById('bEsp3').innerText = parseInt(document.getElementById('bEsp3').innerText)+1; document.getElementById('stockE3').innerText--; document.getElementById('dinero').innerText = dinero; actualizarBotones(); } }
+    function comprarBroteGalactico() { if(dinero >= 10000 && parseInt(document.getElementById('stockG').innerText) > 0) { dinero -= 10000; document.getElementById('bGalactico').innerText = parseInt(document.getElementById('bGalactico').innerText)+1; document.getElementById('stockG').innerText--; document.getElementById('dinero').innerText = dinero; actualizarBotones(); } }
+    function comprarBroteSombra() { if(dinero >= 20000 && parseInt(document.getElementById('stockS').innerText) > 0) { dinero -= 20000; document.getElementById('bSombra').innerText = parseInt(document.getElementById('bSombra').innerText)+1; document.getElementById('stockS').innerText--; document.getElementById('dinero').innerText = dinero; actualizarBotones(); } }
+    function comprarBroteArcoiris() { if(dinero >= 50000 && parseInt(document.getElementById('stockArc').innerText) > 0) { dinero -= 50000; document.getElementById('bArcoiris').innerText = parseInt(document.getElementById('bArcoiris').innerText)+1; document.getElementById('stockArc').innerText--; document.getElementById('dinero').innerText = dinero; actualizarBotones(); } }
+    function comprarBroteMagma() { if(dinero >= 100000 && parseInt(document.getElementById('stockMagma').innerText) > 0) { dinero -= 100000; document.getElementById('bMagma').innerText = parseInt(document.getElementById('bMagma').innerText)+1; document.getElementById('stockMagma').innerText--; document.getElementById('dinero').innerText = dinero; actualizarBotones(); } }
+    function comprarBroteCosmico() { if(dinero >= 250000 && parseInt(document.getElementById('stockCosmico').innerText) > 0) { dinero -= 250000; document.getElementById('bCosmico').innerText = parseInt(document.getElementById('bCosmico').innerText)+1; document.getElementById('stockCosmico').innerText--; document.getElementById('dinero').innerText = dinero; actualizarBotones(); } }
+    function comprarBroteEterno() { if(dinero >= 500000 && parseInt(document.getElementById('stockEterno').innerText) > 0) { dinero -= 500000; document.getElementById('bEterno').innerText = parseInt(document.getElementById('bEterno').innerText)+1; document.getElementById('stockEterno').innerText--; document.getElementById('dinero').innerText = dinero; actualizarBotones(); } }
+    function comprarBroteVoid() { if(dinero >= 1000000 && parseInt(document.getElementById('stockVoid').innerText) > 0) { dinero -= 1000000; document.getElementById('bVoid').innerText = parseInt(document.getElementById('bVoid').innerText)+1; document.getElementById('stockVoid').innerText--; document.getElementById('dinero').innerText = dinero; actualizarBotones(); } }
+
+    function venderMadera() {
+        let totalMadera = mNormal + mBlanca + mNevada + mPino + mEsp1 + mEsp2 + mEsp3 + mGravedad + mSombra + mArcoiris + mMagma + mCosmica + mEterno + mVoid;
+        if(totalMadera === 0) return;
+        
+        let petMult = 1;
+        mascotasEquipadas.forEach(m => {
+            petMult *= m.mult;
+        });
+
+        let rebMult = 1 + (rebirths * 0.5);
+        let ganancia = Math.floor(((mNormal * 25) + (mBlanca * 50) + (mNevada * 250) + (mPino * 1000) + (mEsp1 * 1000) + (mEsp2 * 2500) + (mEsp3 * 5000) + (mGravedad * 12500) + (mSombra * 25000) + (mArcoiris * 75000) + (mMagma * 200000) + (mCosmica * 500000) + (mEterno * 1200000) + (mVoid * 3000000)) * petMult * rebMult);
+        
+        mNormal = 0; mBlanca = 0; mNevada = 0; mPino = 0; mEsp1 = 0; mEsp2 = 0; mEsp3 = 0; mGravedad = 0; mSombra = 0; mArcoiris = 0; mMagma = 0; mCosmica = 0; mEterno = 0; mVoid = 0;
+        document.getElementById('madera').innerText = mNormal; document.getElementById('mBlanca').innerText = mBlanca;
+        document.getElementById('mNevada').innerText = mNevada; document.getElementById('mPino').innerText = mPino;
+        document.getElementById('mEsp1').innerText = mEsp1; document.getElementById('mEsp2').innerText = mEsp2;
+        document.getElementById('mEsp3').innerText = mEsp3; document.getElementById('mGravedad').innerText = mGravedad;
+        document.getElementById('mSombra').innerText = mSombra; document.getElementById('mArcoiris').innerText = mArcoiris;
+        document.getElementById('mMagma').innerText = mMagma; document.getElementById('mCosmica').innerText = mCosmica;
+        document.getElementById('mEterno').innerText = mEterno; document.getElementById('mVoid').innerText = mVoid;
+
+        let msgVenta = document.getElementById('msgVenta');
+        msgVenta.innerText = "¡Ganaste $" + ganancia + "!";
+        msgVenta.style.opacity = 1;
+        setTimeout(() => { msgVenta.style.opacity = 0; }, 1500);
+
+        let uiRect = document.getElementById('ui').getBoundingClientRect();
+        let cantCoins = Math.min(totalMadera, 10);
+        for(let i = 0; i < cantCoins; i++) {
+            let coin = document.createElement('div');
+            coin.className = 'madecoin';
+            coin.innerText = "🪵";
+            coin.style.left = (window.innerWidth / 2 + (Math.random() * 60 - 30)) + 'px';
+            coin.style.top = (window.innerHeight / 2 + (Math.random() * 60 - 30)) + 'px';
+            document.body.appendChild(coin);
+
+            setTimeout(() => {
+                coin.style.left = (uiRect.left + 50) + 'px';
+                coin.style.top = (uiRect.top + 20) + 'px';
+                coin.style.transform = 'scale(0.5)';
+                coin.style.opacity = '0.5';
+            }, 50);
+
+            setTimeout(() => {
+                coin.remove();
+            }, 850);
+        }
+
+        dinero += ganancia;
+        document.getElementById('dinero').innerText = dinero;
+        verificarLogros();
+    }
+
+    function verificarCodigo() {
+        let cod = document.getElementById('inputCodigo').value.trim();
+        let msg = document.getElementById('msgCodigo');
+        let codLower = cod.toLowerCase();
+        
+        if(codLower === "jpma") { 
+            document.getElementById('btnAdmin').style.display = 'block'; 
+            msg.innerText = "Felicidades +admin panel unlocked"; 
+        } 
+        else if(codLower === "updateincoming") {
+            dinero += 100;
+            comprarHacha(5, 0, 0x3498db);
+            msg.innerText = "¡CÓDIGO CANJEADO: $100 y Hacha Diamante!";
+        } 
+        else if(codLower === "achambear") {
+            dinero += 500;
+            document.getElementById('dinero').innerText = dinero;
+            msg.innerText = "¡CÓDIGO CANJEADO: $500!";
+        }
+        else if(codLower === "marjuas67") {
+            dinero += 1000;
+            comprarHacha(15, 0, 0x8e44ad);
+            msg.innerText = "¡CÓDIGO CANJEADO: $1000 y Hacha Obsidiana!";
+        }
+        else {
+            msg.innerText = "CÓDIGO INCORRECTO";
+        }
+        document.getElementById('dinero').innerText = dinero;
+        verificarLogros();
+    }
+    
+    function comprarHuevo(tipoHuevo) {
+        let precio = 500;
+        if(tipoHuevo === 2) precio = 5000;
+        if(tipoHuevo === 3) precio = 25000;
+        if(tipoHuevo === 4) precio = 100000;
+
+        if(dinero >= precio) {
+            dinero -= precio;
+            document.getElementById('dinero').innerText = dinero;
+            
+            let rand = Math.random();
+            let nombre = "Gato";
+            let mult = 1.5;
+
+            if(tipoHuevo === 1) {
+                if(rand < 0.7) { nombre = "Gato"; mult = 1.5; }
+                else { nombre = "Perro"; mult = 2.0; }
+            } else if(tipoHuevo === 2) {
+                if(rand < 0.6) { nombre = "Zorro"; mult = 3.5; }
+                else if(rand < 0.9) { nombre = "Lobo"; mult = 5.0; }
+                else { nombre = "Oso"; mult = 7.5; }
+            } else if(tipoHuevo === 3) {
+                if(rand < 0.6) { nombre = "Fénix"; mult = 12.0; }
+                else if(rand < 0.9) { nombre = "Dragón"; mult = 18.0; }
+                else { nombre = "Grifón"; mult = 25.0; }
+            } else if(tipoHuevo === 4) {
+                if(rand < 0.6) { nombre = "Celestial"; mult = 40.0; }
+                else if(rand < 0.9) { nombre = "Galáctico"; mult = 65.0; }
+                else { nombre = "Arcoiris Supremo"; mult = 100.0; }
+            }
+
+            inventarioMascotas.push({nombre: nombre, mult: mult});
+            alert("¡Te ha salido un " + nombre + " (x" + mult + " de dinero)!");
+            actualizarInventario();
+            verificarLogros();
+        } else {
+            alert("No tienes suficiente dinero para este huevo.");
+        }
+    }
+
+    function actualizarInventario() {
+        let lista = document.getElementById('listaMascotas');
+        lista.innerHTML = "";
+        
+        document.getElementById('numEquipadas').innerText = mascotasEquipadas.length;
+
+        if(inventarioMascotas.length === 0) {
+            lista.innerHTML = `<div class="inv-vacio">No tienes mascotas en tu mochila. ¡Compra un huevo!</div>`;
+            return;
+        }
+
+        inventarioMascotas.forEach((m, index) => {
+            let esEquipado = mascotasEquipadas.includes(m);
+            let slot = document.createElement('div');
+            slot.className = "inv-slot" + (esEquipado ? " equipado" : "");
+            slot.innerHTML = `
+                <div>
+                    <strong>${m.nombre}</strong><br>
+                    <span>x${m.mult} Dinero</span>
+                </div>
+                <button onclick="equiparMascota(${index})">${esEquipado ? 'QUITAR' : 'EQUIPAR'}</button>
+            `;
+            lista.appendChild(slot);
+        });
+    }
+
+    function equiparMascota(index) {
+        let mascota = inventarioMascotas[index];
+        let indexEquipado = mascotasEquipadas.indexOf(mascota);
+
+        if(indexEquipado !== -1) {
+            mascotasEquipadas.splice(indexEquipado, 1);
+        } else {
+            if(mascotasEquipadas.length < 2) {
+                mascotasEquipadas.push(mascota);
+            } else {
+                alert("¡Ya tienes 2 mascotas equipadas! Desequipa una para cambiar.");
+            }
+        }
+        actualizarInventario();
+    }
+
+    function setDinero() { dinero = parseInt(document.getElementById('admDinero').value); document.getElementById('dinero').innerText = dinero; verificarLogros(); }
+    function setBrotes() {
+        let tipo = document.getElementById('admBrotes').value;
+        switch(tipo) { 
+            case "1": document.getElementById('brotes').innerText++; break; 
+            case "2": document.getElementById('brotesBlancos').innerText++; break; 
+            case "3": document.getElementById('brotesNevados').innerText++; break; 
+            case "4": document.getElementById('brotesPinos').innerText++; break; 
+            case "5": document.getElementById('bEsp1').innerText++; break; 
+            case "6": document.getElementById('bEsp2').innerText++; break; 
+            case "7": document.getElementById('bEsp3').innerText++; break; 
+            case "8": document.getElementById('bGalactico').innerText++; break; 
+            case "9": document.getElementById('bSombra').innerText++; break; 
+            case "10": document.getElementById('bArcoiris').innerText++; break; 
+            case "11": document.getElementById('bMagma').innerText++; break; 
+            case "12": document.getElementById('bCosmico').innerText++; break; 
+            case "13": document.getElementById('bEterno').innerText++; break; 
+            case "14": document.getElementById('bVoid').innerText++; break; 
+        }
+        actualizarBotones();
+    }
+    function darMascotaAdmin() {
+        let tipoHuevo = parseInt(document.getElementById('admMascotaTipo').value);
+        let multParam = parseFloat(document.getElementById('admMascotaMult').value);
+        let nombre = "Gato";
+        let mult = isNaN(multParam) ? 1.5 : multParam;
+
+        if(tipoHuevo === 2) {
+            nombre = "Zorro";
+            if(isNaN(multParam)) mult = 3.5;
+        } else if(tipoHuevo === 3) {
+            nombre = "Fénix";
+            if(isNaN(multParam)) mult = 12.0;
+        } else if(tipoHuevo === 4) {
+            nombre = "Celestial";
+            if(isNaN(multParam)) mult = 40.0;
+        } else {
+            if(isNaN(multParam)) mult = 1.5;
+        }
+
+        inventarioMascotas.push({nombre: nombre, mult: mult});
+        actualizarInventario();
+        verificarLogros();
+        alert("¡Mascota generada con éxito en el inventario!");
+    }
+    function darHachaArcoiris() {
+        danoPorGolpe = Infinity;
+        esHachaArcoiris = true;
+        alert("¡Hacha de Admin equipada! Daño: Infinito.");
+    }
+    function comprarHacha(dano, precio, color) {
+        if(dinero >= precio) { 
+            dinero -= precio; 
+            danoPorGolpe = dano + (rebirths * 5); 
+            esHachaArcoiris = false;
+            filoHacha.material.color.set(color); 
+            document.getElementById('dinero').innerText = dinero; 
+            alert("Hacha equipada."); 
+            verificarLogros(); 
+        } else {
+            alert("No tienes suficiente dinero.");
+        }
+    }
+
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({antialias: false}); 
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    document.body.appendChild(renderer.domElement);
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    const jugador = new THREE.Group();
+    const matAmarillo = pix(new THREE.MeshStandardMaterial({color: 0xffff00}));
+    const cabeza = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.2), pix(new THREE.MeshStandardMaterial({color: 0xffdbac})));
+    cabeza.position.set(0, 1.6, 0); 
+    const casco = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2), matAmarillo);
+    casco.position.set(0, 1.7, 0);
+    const torsoAmarillo = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.4, 0.2), matAmarillo);    torsoAmarillo.position.set(-0.075, 1.3, 0);
+    const torsoAzul = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.4, 0.2), pix(new THREE.MeshStandardMaterial({color: 0x0000ff})));
+    torsoAzul.position.set(0.075, 1.3, 0);
+    const pI = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.3, 0.2), matAmarillo);
+    pI.position.set(-0.07, 0.9, 0);
+    const pD = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.3, 0.2), matAmarillo);
+    pD.position.set(0.07, 0.9, 0);
+    
+    const brazoHacha = new THREE.Group();
+    const brazo = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.3, 0.1), matAmarillo);
+    brazo.position.set(0, -0.15, 0);
+    const mango = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.4), pix(new THREE.MeshStandardMaterial({color: 0x5d4037})));
+    mango.position.set(0.1, -0.2, 0); 
+    const filoHacha = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.16, 0.08), pix(new THREE.MeshStandardMaterial({color: 0xbdc3c7})));
+    filoHacha.position.set(0.2, -0.1, 0); 
+    brazoHacha.add(brazo, mango, filoHacha);
+    brazoHacha.position.set(0.2, 1.45, 0);
+    brazoHacha.rotation.z = -0.1; 
+    
+    jugador.add(cabeza, casco, torsoAmarillo, torsoAzul, pI, pD, brazoHacha);
+    jugador.position.set(-0.8, -0.8, 0); scene.add(jugador);
+    const arbol = new THREE.Group();
+    arbol.name = "arbol"; scene.add(arbol); arbol.visible = false; 
+    camera.position.set(0, 1.5, 4); scene.add(new THREE.AmbientLight(0xffffff, 1));
+
+    seleccionarFondo(0);
+    actualizarInventario();
+
+    function crearHoja() {
+        const geometry = new THREE.PlaneGeometry(0.1, 0.1);
+        const material = pix(new THREE.MeshBasicMaterial({color: 0x228B22, side: THREE.DoubleSide}));
+        const hoja = new THREE.Mesh(geometry, material);
+        hoja.position.set((Math.random() - 0.5) * 5, 3, (Math.random() - 0.5) * 5);
+        scene.add(hoja);
+        let velocidadY = 0.02 + Math.random() * 0.03;
+        function caer() {
+            hoja.position.y -= velocidadY; hoja.rotation.x += 0.05; hoja.rotation.z += 0.02;
+            if (hoja.position.y > -1) requestAnimationFrame(caer);
+            else scene.remove(hoja);
+        }
+        caer();
+    }
+    setInterval(crearHoja, 1000);
+
+    function actualizarBotones() {
+        let hayArbol = arbol.visible || estaCreciendo;
+        document.getElementById('btnPlantar').disabled = (parseInt(document.getElementById('brotes').innerText) <= 0 || hayArbol);
+        document.getElementById('btnPlantarBlanco').disabled = (parseInt(document.getElementById('brotesBlancos').innerText) <= 0 || hayArbol);
+        document.getElementById('btnPlantarNevado').disabled = (parseInt(document.getElementById('brotesNevados').innerText) <= 0 || hayArbol);
+        document.getElementById('btnPlantarPino').disabled = (parseInt(document.getElementById('brotesPinos').innerText) <= 0 || hayArbol);
+        document.getElementById('btnPlantarEsp1').disabled = (parseInt(document.getElementById('bEsp1').innerText) <= 0 || hayArbol);
+        document.getElementById('btnPlantarEsp2').disabled = (parseInt(document.getElementById('bEsp2').innerText) <= 0 || hayArbol);
+        document.getElementById('btnPlantarEsp3').disabled = (parseInt(document.getElementById('bEsp3').innerText) <= 0 || hayArbol);
+        document.getElementById('btnPlantarGalactico').disabled = (parseInt(document.getElementById('bGalactico').innerText) <= 0 || hayArbol);
+        document.getElementById('btnPlantarSombra').disabled = (parseInt(document.getElementById('bSombra').innerText) <= 0 || hayArbol);
+        document.getElementById('btnPlantarArcoiris').disabled = (parseInt(document.getElementById('bArcoiris').innerText) <= 0 || hayArbol);
+        document.getElementById('btnPlantarMagma').disabled = (parseInt(document.getElementById('bMagma').innerText) <= 0 || hayArbol);
+        document.getElementById('btnPlantarCosmico').disabled = (parseInt(document.getElementById('bCosmico').innerText) <= 0 || hayArbol);
+        document.getElementById('btnPlantarEterno').disabled = (parseInt(document.getElementById('bEterno').innerText) <= 0 || hayArbol);
+        document.getElementById('btnPlantarVoid').disabled = (parseInt(document.getElementById('bVoid').innerText) <= 0 || hayArbol);
+    }
+    actualizarBotones();
+
+    function mostrarDanioFlotante(texto, clientX, clientY) {
+        let popup = document.createElement('div');
+        popup.className = 'dmg-popup';
+        popup.innerText = "-" + texto;
+        popup.style.left = (clientX + (Math.random() * 40 - 20)) + 'px';
+        popup.style.top = (clientY - 20) + 'px';
+        document.body.appendChild(popup);
+        setTimeout(() => popup.remove(), 600);
+    }
+
+    function actualizarUIBarrasYCrecimiento() {
+        let barContainer = document.getElementById('treeBarContainer');
+        let barFill = document.getElementById('treeBarFill');
+        let growthDisplay = document.getElementById('growthTimerDisplay');
+
+        if(estaCreciendo) {
+            barContainer.style.display = 'none';
+            growthDisplay.style.display = 'block';
+            
+            let vector = new THREE.Vector3(0.6, 1.5, 0);
+            vector.project(camera);
+            let x = (vector.x *  .5 + .5) * window.innerWidth;
+            let y = (vector.y * -.5 + .5) * window.innerHeight;
+            growthDisplay.style.left = x + 'px';
+            growthDisplay.style.top = y + 'px';
+            growthDisplay.innerText = "💧 Creciendo: " + tiempoRestanteCrecimiento.toFixed(1) + "s";
+            return;
+        } else {
+            growthDisplay.style.display = 'none';
+        }
+
+        if(!arbol.visible || arbolCortado) {
+            barContainer.style.display = 'none';
+            return;
+        }
+        barContainer.style.display = 'block';
+        let vector = new THREE.Vector3(0.6, 2.8, 0);
+        vector.project(camera);
+        let x = (vector.x *  .5 + .5) * window.innerWidth;
+        let y = (vector.y * -.5 + .5) * window.innerHeight;
+        barContainer.style.left = x + 'px';
+        barContainer.style.top = y + 'px';
+        let porcentaje = Math.max(0, (vidaActual / vidaMax) * 100);
+        barFill.style.width = porcentaje + '%';
+    }
+
+    function golpear(clientX, clientY) {
+        if(estaCreciendo || !arbol.visible || arbolCortado) return;
+        let anim = 0;
+        let interval = setInterval(() => {
+            brazoHacha.rotation.z = Math.sin(anim) * 0.5 - 0.1;
+            anim += 0.5;
+            if(anim > 6) { clearInterval(interval); brazoHacha.rotation.z = -0.1; }
+        }, 30);
+        arbol.position.x += 0.08;
+        setTimeout(() => arbol.position.x -= 0.08, 40);
+        
+        let realDano = esHachaArcoiris ? vidaActual : Math.min(vidaActual, danoPorGolpe);
+        vidaActual -= danoPorGolpe;
+        mostrarDanioFlotante(realDano, clientX, clientY);
+        actualizarUIBarrasYCrecimiento();
+
+        if(vidaActual <= 0) talar();
+    }
+
+    function talar() {
+        arbolCortado = true;
+        document.getElementById('treeBarContainer').style.display = 'none';
+        let tronco = arbol.children[0];
+        let copa = arbol.children[1];
+        let frame = 0;
+        let caida = setInterval(() => {
+            frame++;
+            tronco.rotation.z += 0.12;
+            tronco.position.y -= 0.05;
+            copa.position.y -= 0.05;
+            copa.position.x += 0.06;
+            if(frame > 20) clearInterval(caida);
+        }, 25);
+
+        if(tipoArbol === 13) { mVoid++; document.getElementById('mVoid').innerText = mVoid; }
+        else if(tipoArbol === 12) { mEterno++; document.getElementById('mEterno').innerText = mEterno; }
+        else if(tipoArbol === 11) { mCosmica++; document.getElementById('mCosmica').innerText = mCosmica; }
+        else if(tipoArbol === 10) { mMagma++; document.getElementById('mMagma').innerText = mMagma; }
+        else if(tipoArbol === 9) { mArcoiris++; document.getElementById('mArcoiris').innerText = mArcoiris; }
+        else if(tipoArbol === 8) { mSombra++; document.getElementById('mSombra').innerText = mSombra; }
+        else if(tipoArbol === 7) { mGravedad++; document.getElementById('mGravedad').innerText = mGravedad; }
+        else if(tipoArbol === 6) { mEsp3++; document.getElementById('mEsp3').innerText = mEsp3; }
+        else if(tipoArbol === 5) { mEsp2++; document.getElementById('mEsp2').innerText = mEsp2; }
+        else if(tipoArbol === 4) { mEsp1++; document.getElementById('mEsp1').innerText = mEsp1; }
+        else if(tipoArbol === 3) { mPino++; document.getElementById('mPino').innerText = mPino; }
+        else if(tipoArbol === 2) { mNevada++; document.getElementById('mNevada').innerText = mNevada; }
+        else if(tipoArbol === 1) { mBlanca++; document.getElementById('mBlanca').innerText = mBlanca; }
+        else { mNormal++; document.getElementById('madera').innerText = mNormal; }
+
+        arbolesCortadosTotal++;
+        verificarLogros();
+
+        setTimeout(() => { 
+            arbol.visible = false; 
+            actualizarBotones(); 
+            arbol.position.y = 0; 
+            arbol.position.x = 0.6;
+            arbol.rotation.z = 0; 
+        }, 1000);
+    }
+
+    function plantar(tipo) {
+        if (arbol.visible || estaCreciendo) return;
+        tipoArbol = tipo;
+        
+        let idBrote = tipo === 13 ? 'bVoid' : (tipo === 12 ? 'bEterno' : (tipo === 11 ? 'bCosmico' : (tipo === 10 ? 'bMagma' : (tipo === 9 ? 'bArcoiris' : (tipo === 8 ? 'bSombra' : (tipo === 7 ? 'bGalactico' : (tipo === 6 ? 'bEsp3' : (tipo === 5 ? 'bEsp2' : (tipo === 4 ? 'bEsp1' : (tipo === 3 ? 'brotesPinos' : (tipo === 2 ? 'brotesNevados' : (tipo === 1 ? 'brotesBlancos' : 'brotes'))))))))))));
+        let elem = document.getElementById(idBrote);
+        let cantidadActual = parseInt(elem.innerText);
+        
+        if (cantidadActual <= 0) return;
+        elem.innerText = cantidadActual - 1;
+
+        const tiemposCrecimiento = [3.0, 5.0, 8.0, 12.0, 15.0, 20.0, 25.0, 35.0, 45.0, 60.0, 90.0, 120.0, 180.0, 300.0];
+        tiempoTotalCrecimiento = tiemposCrecimiento[tipo] || 3.0;
+        tiempoRestanteCrecimiento = tiempoTotalCrecimiento;
+        estaCreciendo = true;
+        actualizarBotones();
+
+        arbol.position.set(0.6, -0.05, 0); 
+        vidaActual = vidaMax = (tipo === 13 ? 1000 : (tipo === 12 ? 750 : (tipo === 11 ? 500 : (tipo === 10 ? 400 : (tipo === 9 ? 300 : (tipo === 8 ? 200 : (tipo === 7 ? 150 : (tipo === 6 ? 100 : (tipo === 5 ? 50 : (tipo === 4 ? 40 : (tipo === 3 ? 30 : (tipo === 2 ? 15 : (tipo === 1 ? 5 : 2)))))))))))));
+        while(arbol.children.length > 0) arbol.remove(arbol.children[0]);
+        
+        if (tipo === 13) {
+            const tronco = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 1.6), pix(new THREE.MeshStandardMaterial({color: 0x111111})));
+            tronco.position.y = 0.8;
+            const copa = new THREE.Mesh(new THREE.OctahedronGeometry(1.2), pix(new THREE.MeshStandardMaterial({color: 0x000000, emissive: 0x9b59b6})));
+            copa.position.y = 2.1;
+            arbol.add(tronco, copa);
+        } else if (tipo === 12) {
+            const tronco = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 1.5), pix(new THREE.MeshStandardMaterial({color: 0x16a085})));
+            tronco.position.y = 0.75;
+            const copa = new THREE.Mesh(new THREE.DodecahedronGeometry(1.1), pix(new THREE.MeshStandardMaterial({color: 0x1abc9c, emissive: 0xf1c40f})));
+            copa.position.y = 2.0;
+            arbol.add(tronco, copa);
+        } else if (tipo === 11) {
+            const tronco = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 1.5), pix(new THREE.MeshStandardMaterial({color: 0x2980b9})));
+            tronco.position.y = 0.75;
+            const copa = new THREE.Mesh(new THREE.SphereGeometry(1.1), pix(new THREE.MeshStandardMaterial({color: 0x8e44ad, emissive: 0x34495e})));
+            copa.position.y = 2.0;
+            arbol.add(tronco, copa);
+        } else if (tipo === 10) {
+            const tronco = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 1.4), pix(new THREE.MeshStandardMaterial({color: 0xd35400})));
+            tronco.position.y = 0.7;
+            const copa = new THREE.Mesh(new THREE.ConeGeometry(1.0, 1.4, 16), pix(new THREE.MeshStandardMaterial({color: 0xe67e22, emissive: 0xc0392b})));
+            copa.position.y = 1.9;
+            arbol.add(tronco, copa);
+        } else if (tipo === 9) {
+            const tronco = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.2, 1.4), pix(new THREE.MeshStandardMaterial({color: 0xff00ff})));
+            tronco.position.y = 0.7;
+            const copa = new THREE.Mesh(new THREE.DodecahedronGeometry(1.0), pix(new THREE.MeshStandardMaterial({color: 0x00ffff, emissive: 0x330033})));
+            copa.position.y = 1.9;
+            arbol.add(tronco, copa);
+        } else if (tipo === 8) { 
+            const tronco = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.2, 1.3), pix(new THREE.MeshStandardMaterial({color: 0x111111})));
+            tronco.position.y = 0.65;
+            const copa = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 1.2), pix(new THREE.MeshStandardMaterial({color: 0x222222})));
+            copa.position.y = 1.7;
+            arbol.add(tronco, copa);
+        } else if (tipo === 7) { 
+            const tronco = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 1.4), pix(new THREE.MeshStandardMaterial({color: 0x4a148c})));
+            tronco.position.y = 0.7;
+            const copa = new THREE.Mesh(new THREE.IcosahedronGeometry(0.95), pix(new THREE.MeshStandardMaterial({color: 0x9c27b0, emissive: 0x211030})));
+            copa.position.y = 1.8;
+            arbol.add(tronco, copa);
+        } else if (tipo >= 4) {
+            const tronco = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 1.2), pix(new THREE.MeshStandardMaterial({color: 0x3e2723})));
+            tronco.position.y = 0.6;
+            const col = (tipo === 6) ? 0x3498db : (tipo === 5 ? 0xe74c3c : 0xf1c40f);
+            const copa = new THREE.Mesh(new THREE.SphereGeometry(0.9), pix(new THREE.MeshStandardMaterial({color: col})));
+            copa.position.y = 1.8;
+            arbol.add(tronco, copa);
+        } else if (tipo === 3) {
+            const tronco = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.2, 0.8), pix(new THREE.MeshStandardMaterial({color: 0x5d4037})));
+            tronco.position.y = 0.4;
+            const colorHojas = 0x27ae60;
+            const hojas1 = new THREE.Mesh(new THREE.ConeGeometry(0.7, 0.8, 16), pix(new THREE.MeshStandardMaterial({color: colorHojas})));
+            hojas1.position.y = 1.2;
+            const hojas2 = new THREE.Mesh(new THREE.ConeGeometry(0.5, 0.6, 16), pix(new THREE.MeshStandardMaterial({color: colorHojas})));
+            hojas2.position.y = 1.7;
+            const hojas3 = new THREE.Mesh(new THREE.ConeGeometry(0.3, 0.4, 16), pix(new THREE.MeshStandardMaterial({color: colorHojas})));
+            hojas3.position.y = 2.1;
+            arbol.add(tronco, hojas1, hojas2, hojas3);
+        } else if (tipo === 2) {
+            const tronco = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.2, 0.8), pix(new THREE.MeshStandardMaterial({color: 0x5d4037})));
+            tronco.position.y = 0.4;
+            const colorHojas = 0xffffff;
+            const hojas1 = new THREE.Mesh(new THREE.ConeGeometry(0.7, 0.8, 16), pix(new THREE.MeshStandardMaterial({color: colorHojas})));
+            hojas1.position.y = 1.2;
+            const hojas2 = new THREE.Mesh(new THREE.ConeGeometry(0.5, 0.6, 16), pix(new THREE.MeshStandardMaterial({color: colorHojas})));
+            hojas2.position.y = 1.7;
+            const hojas3 = new THREE.Mesh(new THREE.ConeGeometry(0.3, 0.4, 16), pix(new THREE.MeshStandardMaterial({color: colorHojas})));
+            hojas3.position.y = 2.1;
+            arbol.add(tronco, hojas1, hojas2, hojas3);
+        } else {
+            const tronco = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 1.5), pix(new THREE.MeshStandardMaterial({color: tipo === 1 ? 0xffffff : 0x8B4513})));
+            tronco.position.y = 0.75;
+            const copa = new THREE.Mesh(new THREE.IcosahedronGeometry(0.8), pix(new THREE.MeshStandardMaterial({color: 0x228B22})));
+            copa.position.y = 1.75;
+            arbol.add(tronco, copa);
+        }
+        
+        arbol.visible = true;
+        arbol.scale.set(0.1, 0.1, 0.1);
+        arbolCortado = false;
+    }
+
+    window.addEventListener('click', (e) => {
+        if (e.target.tagName === 'BUTTON' || e.target.closest('#ui' ) || e.target.closest('.botones-menu') || e.target.closest('div[id^="menu"]') || e.target.closest('#menuPrincipal') || e.target.closest('#menuSkins') || e.target.closest('#menuFondos')) {
+            return;
+        }
+        if(arbol.visible && !arbolCortado && !estaCreciendo) {
+            golpear(e.clientX, e.clientY);
+        }
+    });
+
+    window.addEventListener('touchstart', (e) => {
+        if (e.target.tagName === 'BUTTON' || e.target.closest('#ui' ) || e.target.closest('.botones-menu') || e.target.closest('div[id^="menu"]') || e.target.closest('#menuPrincipal') || e.target.closest('#menuSkins') || e.target.closest('#menuFondos')) {
+            return;
+        }
+        if(arbol.visible && !arbolCortado && !estaCreciendo && e.touches.length > 0) {
+            let touch = e.touches[0];
+            golpear(touch.clientX, touch.clientY);
+        }
+    }, {passive: true});
+
+    let ultimoTiempo = Date.now();
+    function animate() {
+        requestAnimationFrame(animate);
+        let ahora = Date.now();
+        let delta = (ahora - ultimoTiempo) / 1000;
+        ultimoTiempo = ahora;
+
+        if (estaCreciendo) {
+            tiempoRestanteCrecimiento -= delta;
+            let progreso = 1 - (tiempoRestanteCrecimiento / tiempoTotalCrecimiento);
+            if (progreso < 0) progreso = 0;
+            if (progreso > 1) progreso = 1;
+            
+            arbol.scale.set(progreso, progreso, progreso);
+
+            if (tiempoRestanteCrecimiento <= 0) {
+                estaCreciendo = false;
+                arbol.scale.set(1, 1, 1);
+                actualizarBotones();
+            }
+        }
+
+        if (esHachaArcoiris) {
+            let hue = (Date.now() % 3000) / 3000;
+            filoHacha.material.color.setHSL(hue, 1, 0.5);
+        }
+        if (arbol.visible && tipoArbol === 9 && arbol.children[1]) {
+            let hueArbol = (Date.now() % 3000) / 3000;
+            arbol.children[1].material.color.setHSL(hueArbol, 1, 0.5);
+        }
+        
+        actualizarUIBarrasYCrecimiento();
+        renderer.render(scene, camera);
+    }
+    animate();
+</script>
+</body>
+</html>
